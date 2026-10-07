@@ -1,0 +1,2748 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio</title>
+  <meta name="description" content="Portfolio">
+  <script>
+    // 첫 화면 깜빡임 방지: 렌더링 전에 테마를 먼저 적용
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+  <style>
+/* ---------- 디자인 토큰 ---------- */
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface-2: #f0f0ec;
+  --text: #1b1d21;
+  --muted: #5f636b;
+  --line: #e2e2dc;
+  --accent: #2f5bd3;
+  --accent-soft: #e6ecfb;
+  --ok: #1e7a4f;
+  --ok-soft: #e3f3ea;
+  --warn: #9a5b00;
+  --warn-soft: #fdf1dc;
+  --todo: #b3261e;
+  --todo-soft: #fbe9e7;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgb(0 0 0 / .04), 0 4px 16px rgb(0 0 0 / .04);
+  --font: "Pretendard Variable", Pretendard, "Noto Sans JP", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #111316;
+  --surface: #181b20;
+  --surface-2: #20242a;
+  --text: #e8e9ec;
+  --muted: #9aa0a9;
+  --line: #2b3038;
+  --accent: #7c9cf5;
+  --accent-soft: #1f2a45;
+  --ok: #6fcf9b;
+  --ok-soft: #173327;
+  --warn: #f0b560;
+  --warn-soft: #3a2c14;
+  --todo: #f28b82;
+  --todo-soft: #3a1d1b;
+  --shadow: none;
+  color-scheme: dark;
+}
+
+/* ---------- 기본 ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 16px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+body.no-scroll { overflow: hidden; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin: 0; }
+code { font-size: .9em; background: var(--surface-2); padding: .1em .35em; border-radius: 4px; }
+.container { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 720px) { .container { padding: 0 32px; } }
+.muted { color: var(--muted); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.skip-link { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 8px 12px; z-index: 100; }
+.skip-link:focus { left: 8px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+
+/* ---------- 헤더 ---------- */
+.site-header {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.nav { display: flex; align-items: center; gap: 16px; height: 60px; }
+.brand { font-weight: 700; color: var(--text); white-space: nowrap; }
+.brand:hover { text-decoration: none; }
+.nav-links { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.nav-links a {
+  color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 8px; white-space: nowrap;
+}
+.nav-links a:hover { color: var(--text); text-decoration: none; background: var(--surface-2); }
+.nav-links a.active { color: var(--text); font-weight: 600; }
+.controls { display: flex; align-items: center; gap: 8px; }
+.lang-switch { display: flex; background: var(--surface-2); border-radius: 8px; padding: 2px; }
+.lang-switch button {
+  border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; font-weight: 600;
+  padding: 4px 8px; border-radius: 6px; cursor: pointer;
+}
+.lang-switch button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.icon-btn {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; flex-shrink: 0;
+}
+.icon-btn:hover { text-decoration: none; background: var(--surface-2); }
+@media (max-width: 719px) {
+  .nav { flex-wrap: wrap; height: auto; padding-top: 10px; padding-bottom: 6px; row-gap: 6px; }
+  .controls { margin-left: auto; }
+  .nav-links { order: 3; width: 100%; margin-left: -10px; }
+}
+
+/* ---------- 공지 배너 ---------- */
+#notice:empty { display: none; }
+#notice { margin-top: 16px; display: grid; gap: 8px; }
+.notice {
+  font-size: 14px; padding: 10px 14px; border-radius: 10px;
+  background: var(--surface-2); color: var(--muted); border: 1px solid var(--line);
+}
+.notice-warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+
+/* ---------- 배지 / 태그 ---------- */
+.badge {
+  display: inline-block; font-size: 11.5px; font-weight: 600; line-height: 1.6;
+  padding: 0 8px; border-radius: 999px; vertical-align: middle; white-space: nowrap;
+}
+.badge-ok { background: var(--ok-soft); color: var(--ok); }
+.badge-soft { background: var(--accent-soft); color: var(--accent); }
+.badge-warn { background: var(--warn-soft); color: var(--warn); }
+.badge-pending { background: var(--surface-2); color: var(--muted); font-weight: 500; }
+.todo {
+  display: inline-block; font-size: 13px; font-weight: 500; color: var(--todo);
+  background: var(--todo-soft); padding: 1px 8px; border-radius: 6px;
+}
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 12.5px; padding: 2px 9px; border-radius: 6px; background: var(--surface-2); color: var(--muted); }
+
+/* ---------- 버튼 ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text); font-weight: 600; font-size: 14px;
+}
+.btn:hover { text-decoration: none; background: var(--surface-2); }
+.btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+.btn-primary:hover { background: var(--text); opacity: .88; }
+.btn.is-disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- 히어로 ---------- */
+.hero { padding: 72px 0 40px; }
+.eyebrow { font-size: 14px; color: var(--muted); margin: 0 0 12px; font-weight: 500; }
+.hero-name { font-size: clamp(36px, 7vw, 60px); font-weight: 800; letter-spacing: -.02em; }
+.hero-headline { font-size: clamp(18px, 2.6vw, 24px); color: var(--muted); margin: 12px 0 0; font-weight: 500; }
+.hero-intro { max-width: 640px; margin: 20px 0 0; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+
+/* ---------- 섹션 공통 ---------- */
+.section { padding: 56px 0; border-top: 1px solid var(--line); }
+.section-head { margin-bottom: 24px; }
+.section-head h2 { font-size: 26px; font-weight: 750; letter-spacing: -.01em; }
+.prose { max-width: 720px; }
+.prose p { margin: 0 0 1em; }
+
+/* ---------- 기술 ---------- */
+.skill-groups { display: grid; gap: 28px; }
+.skill-group h3 { font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.skill-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.skill { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.skill-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.skill-name { font-weight: 650; }
+.skill-evidence { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; }
+.evidence-link { background: var(--accent-soft); padding: 1px 8px; border-radius: 6px; }
+
+/* ---------- 프로젝트 ---------- */
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.chip {
+  font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+}
+.chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.project-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+.card.is-sample { border-style: dashed; }
+.card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); }
+.card h3 { font-size: 19px; }
+.card-summary { margin: 0; color: var(--muted); font-size: 15px; flex: 1; }
+.card-link { font-weight: 600; font-size: 14px; margin-top: 4px; }
+
+/* ---------- 학력 / 경력 ---------- */
+.ex-grid { display: grid; gap: 32px; }
+@media (min-width: 860px) { .ex-grid { grid-template-columns: 1fr 1fr; } }
+.ex-block h3 { font-size: 17px; margin-bottom: 14px; }
+.timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+.timeline li { position: relative; padding: 0 0 18px 20px; }
+.timeline li::before {
+  content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px;
+  border-radius: 50%; background: var(--surface); border: 2px solid var(--accent);
+}
+.tl-period { font-size: 13px; color: var(--muted); }
+.tl-body h4 { font-size: 16px; margin: 2px 0; }
+.tl-body p { margin: 0; color: var(--muted); font-size: 15px; }
+.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.bullets { margin: 6px 0 0; padding-left: 1.2em; }
+.bullets li { margin: 2px 0; }
+
+/* ---------- 연락처 ---------- */
+.contact-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-width: 560px; }
+/* 넓은 화면: 2열 — 왼쪽에 2개(Email, GitHub), 오른쪽에 2개(LinkedIn, Blog). 좁은 화면은 1열 */
+@media (min-width: 720px) {
+  .contact-list { max-width: none; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(2, auto); grid-auto-flow: column; column-gap: 16px; }
+}
+.contact-list li { display: flex; gap: 16px; align-items: center; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
+.contact-label { width: 72px; flex-shrink: 0; font-size: 13px; color: var(--muted); font-weight: 600; }
+
+/* ---------- 프로젝트 상세 패널 ---------- */
+.detail { position: fixed; inset: 0; z-index: 50; display: flex; justify-content: flex-end; }
+.detail[hidden] { display: none; }
+.detail-backdrop { position: absolute; inset: 0; background: rgb(0 0 0 / .4); }
+.detail-panel {
+  position: relative; width: min(760px, 100%); height: 100%; overflow-y: auto;
+  background: var(--bg); padding: 28px 20px 48px; outline: none;
+  animation: slide-in .22s ease-out;
+}
+@media (min-width: 720px) { .detail-panel { padding: 36px 40px 64px; } }
+@keyframes slide-in { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.detail-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 24px; }
+.detail-head h2 { font-size: 28px; }
+.detail-summary { color: var(--muted); margin: 10px 0 0; }
+.detail-facts { display: grid; gap: 12px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; }
+.detail-facts > div { display: grid; grid-template-columns: 90px 1fr; gap: 12px; align-items: start; }
+.detail-facts span:first-child { font-size: 13px; color: var(--muted); font-weight: 600; }
+.detail-body section { padding-top: 24px; }
+.detail-body h3 { font-size: 16px; margin-bottom: 8px; }
+.detail-body p { margin: 0; }
+.challenge { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+.challenge-no { margin: 0 0 6px; font-size: 13px; color: var(--muted); font-weight: 700; }
+.challenge dl { margin: 0; display: grid; grid-template-columns: 56px 1fr; gap: 6px 12px; }
+.challenge dt { font-size: 13px; color: var(--muted); font-weight: 600; }
+.challenge dd { margin: 0; }
+.link-row { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* ---------- 푸터 / 부팅 ---------- */
+.site-footer { border-top: 1px solid var(--line); padding: 28px 0 40px; font-size: 14px; }
+.site-footer p { margin: 0 0 4px; }
+.boot { padding: 64px 16px; color: var(--muted); }
+
+/* ===== 기업 분석 (OpenDART) ===== */
+/* #/company 일 때만 기업분석 페이지를 보여주고, 나머지 포트폴리오 섹션은 숨긴다 */
+body:not(.view-company) #company-tool { display: none; }
+.view-company main > section:not(#company-tool), .view-company #notice { display: none; }
+.view-company #company-tool { border-top: 0; padding-top: 32px; }
+/* ===== 자기소개서 작성 (#/extra 일 때만 보인다) ===== */
+body:not(.view-extra) #extra-page { display: none; }
+.view-extra main > section:not(#extra-page), .view-extra #notice { display: none; }
+.view-extra #extra-page { border-top: 0; padding-top: 32px; }
+.cl-main { display: grid; gap: 16px; }
+.cl-grid { display: grid; gap: 16px; align-items: start; }
+@media (min-width: 980px) { .cl-grid { grid-template-columns: minmax(0, 1fr) 340px; } .cl-side { position: sticky; top: 76px; max-height: calc(100vh - 96px); overflow: auto; } }
+.cl-col { display: grid; gap: 16px; min-width: 0; }
+.cl-fields { display: grid; gap: 12px; margin-top: 14px; }
+.cl-field { display: grid; gap: 6px; }
+.cl-field label { font-size: 13px; color: var(--muted); font-weight: 600; }
+.cl-field textarea, .cl-text { font: inherit; font-size: 15px; line-height: 1.7; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); resize: vertical; width: 100%; box-sizing: border-box; }
+.cl-select { font: inherit; font-size: 14px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); max-width: 100%; }
+.cl-q-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+.cl-q-no { width: 28px; height: 28px; border-radius: 50%; background: var(--text); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+.cl-q-title { font-weight: 700; min-width: 160px; }
+.cl-limit { font-size: 13px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.cl-limit input { width: 76px; font: inherit; font-size: 14px; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+.cl-guide { margin: 0 0 10px; padding-left: 18px; font-size: 13px; color: var(--muted); }
+.cl-count { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+.cl-count b { color: var(--text); }
+.cl-count.is-over, .cl-count.is-over b { color: var(--todo); }
+.cl-bar { height: 4px; border-radius: 4px; background: var(--surface-2); margin-top: 6px; overflow: hidden; }
+.cl-bar span { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.cl-count.is-over + .cl-bar span { background: var(--todo); }
+.cl-warns { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
+.cl-warns:empty { display: none; }
+.cl-warns li { padding: 6px 10px; border-radius: 8px; }
+.cl-w-err { background: color-mix(in srgb, var(--todo) 12%, transparent); color: var(--todo); }
+.cl-w-warn { background: var(--warn-soft); color: var(--warn); }
+.cl-w-info { background: var(--surface-2); color: var(--muted); }
+.cl-h4 { font-size: 14px; margin: 14px 0 8px; }
+.cl-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cl-chip { font: inherit; font-size: 13px; text-align: left; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); cursor: pointer; max-width: 100%; overflow-wrap: anywhere; }
+.cl-chip:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+.cl-chip b { color: var(--accent); font-weight: 600; margin-right: 4px; }
+.cl-kw-box { margin-bottom: 10px; }
+.cl-kw { font: inherit; font-size: 14px; line-height: 1.6; padding: 8px 12px; border-radius: 10px; border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); background: var(--accent-soft); color: var(--text); resize: vertical; width: 100%; box-sizing: border-box; }
+.cl-ai-row { margin-bottom: 4px; }
+.cl-ai-msg { margin: 4px 0 8px; }
+.cl-ai-msg:empty { display: none; }
+.cl-ai-badge { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+#g-card .co-check { font-size: 14px; }
+
+/* ===== 진로탐색 (#/career 일 때만 보인다) ===== */
+body:not(.view-career) #career-page { display: none; }
+.view-career main > section:not(#career-page), .view-career #notice { display: none; }
+.view-career #career-page { border-top: 0; padding-top: 32px; }
+.cr-main { display: grid; gap: 16px; }
+.cr-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.cr-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; min-width: 0; }
+.cr-card h3 { font-size: 18px; margin-bottom: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cr-card h4 { font-size: 15px; margin: 0 0 4px; }
+.cr-goal { font-size: 18px; font-weight: 600; margin: 0; }
+.cr-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.cr-items > li { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--surface-2); }
+.cr-items p { margin: 4px 0 0; font-size: 14px; }
+.cr-sub { color: var(--muted); font-size: 13px; }
+.cr-empty { color: var(--muted); font-size: 14px; border: 1px dashed var(--line); border-radius: 10px; padding: 12px 14px; margin: 0; }
+.cr-help { font-size: 13px; color: var(--muted); margin: 0; }
+.cr-sample { background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 10px 14px; font-size: 14px; font-weight: 600; margin: 0 0 14px; }
+.cr-code { font-size: 32px; font-weight: 800; letter-spacing: 4px; margin: 0; }
+.rd-fig { margin: 0 0 16px; text-align: center; }
+.rd-fig svg { width: 100%; max-width: 440px; height: auto; display: block; margin: 0 auto; overflow: visible; }
+.rd-fig figcaption { margin-top: 4px; }
+.rd-grid { fill: none; stroke: var(--line); stroke-width: 1; }
+.rd-tick { font-size: 9px; fill: var(--muted); }
+.rd-shape { fill: color-mix(in srgb, #f97316 14%, transparent); stroke: #f97316; stroke-width: 2.5; stroke-linejoin: round; }
+.rd-dot { fill: #f97316; stroke: var(--surface); stroke-width: 2; }
+.rd-hit { cursor: default; }
+.rd-hit:hover .rd-dot { r: 6.5; }
+.rd-label { font-size: 13px; fill: var(--muted); }
+.rd-label.is-top { fill: var(--text); font-weight: 700; }
+.rd-val { font-variant-numeric: tabular-nums; }
+.rs-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
+.rs-row { display: grid; grid-template-columns: 92px 1fr 36px; gap: 10px; align-items: center; font-size: 14px; }
+.rs-name b { display: inline-block; width: 16px; }
+.rs-track { height: 12px; background: var(--surface-2); border-radius: 4px; position: relative; }
+.rs-bar { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: color-mix(in srgb, var(--accent) 35%, var(--surface-2)); }
+.rs-row.is-top .rs-bar { background: var(--accent); }
+.rs-val { text-align: right; font-variant-numeric: tabular-nums; color: var(--text); }
+.rs-desc { grid-column: 2 / 4; color: var(--muted); font-size: 13px; margin-top: -6px; }
+@media (max-width: 480px) { .rs-row { grid-template-columns: 80px 1fr 32px; } }
+/* 기업 분석 페이지 전용 (공통 토큰은 style.css) */
+.co-main { display: grid; gap: 16px; }
+.co-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+.co-card h2, .co-card h3 { font-size: 18px; margin-bottom: 12px; }
+.co-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.co-corp { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.co-input, .co-search input {
+  flex: 1; min-width: 0; font: inherit; font-size: 15px; padding: 9px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--text);
+}
+.co-search { display: flex; gap: 8px; }
+.co-msg { margin: 10px 0 0; font-size: 14px; color: var(--muted); min-height: 1.4em; }
+.co-msg.is-error { color: var(--todo); }
+.co-help { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.btn[disabled] { opacity: .5; cursor: wait; }
+.btn-danger { color: var(--todo); }
+
+.co-results { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; max-height: 360px; overflow-y: auto; }
+.co-results button {
+  width: 100%; text-align: left; font: inherit; cursor: pointer; color: var(--text);
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg);
+}
+.co-results button:hover, .co-results button[aria-current="true"] { border-color: var(--accent); }
+.co-results small { display: block; color: var(--muted); font-size: 12.5px; }
+
+.co-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.co-head h2 { font-size: 24px; margin: 0; }
+.co-head p { margin: 4px 0 0; color: var(--muted); }
+.co-dl { display: grid; grid-template-columns: 140px 1fr; gap: 10px 16px; margin: 20px 0 0; }
+.co-dl dt { color: var(--muted); font-size: 14px; }
+.co-dl dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .co-dl { grid-template-columns: 1fr; gap: 2px; } .co-dl dd { margin-bottom: 10px; } }
+.co-source { margin-top: 20px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+
+.co-grid { display: grid; gap: 10px; grid-template-columns: 110px 1fr; align-items: center; }
+.co-grid label { font-size: 14px; color: var(--muted); }
+.co-grid select { font: inherit; font-size: 15px; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+.co-check { display: flex; gap: 6px; align-items: center; font-size: 14px; color: var(--muted); }
+.co-help-box { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--bg); }
+
+/* ===== 박스 공통 hover — 프로젝트 카드(.card)와 같은 효과 (상단 메뉴 제외) ===== */
+.skill, .contact-list li, .detail-facts, .challenge,
+.cr-card, .cr-items > li, .cr-empty,
+.co-card, .co-help-box {
+  transition: transform .15s ease, border-color .15s ease;
+}
+.skill:hover, .contact-list li:hover, .detail-facts:hover, .challenge:hover,
+.cr-card:hover, .cr-items > li:hover, .cr-empty:hover,
+.co-card:hover, .co-help-box:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+/* 움직임 줄이기 설정을 켠 사용자에게는 이동 없이 테두리 색만 바꾼다 */
+@media (prefers-reduced-motion: reduce) {
+  .card, .skill, .contact-list li, .detail-facts, .challenge, .cr-card, .cr-items > li, .cr-empty, .co-card, .co-help-box { transition: border-color .15s ease; }
+  .card:hover, .skill:hover, .contact-list li:hover, .detail-facts:hover, .challenge:hover,
+  .cr-card:hover, .cr-items > li:hover, .cr-empty:hover, .co-card:hover, .co-help-box:hover { transform: none; }
+}
+.co-help-box summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+.co-help-box ol { margin: 10px 0; padding-left: 1.3em; font-size: 14px; display: grid; gap: 6px; }
+.co-code-head { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.co-code { margin: 6px 0 0; max-height: 280px; overflow: auto; font-size: 12.5px; line-height: 1.5; padding: 12px; border-radius: 8px; background: var(--surface-2); white-space: pre; }
+.co-warn { font-size: 13px; margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); }
+@media (max-width: 560px) { .co-grid { grid-template-columns: 1fr; gap: 4px; } }
+
+</style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#top" id="brand">Portfolio</a>
+      <nav class="nav-links" id="nav-links" aria-label="Sections"></nav>
+      <div class="controls">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" data-lang="ko">KO</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+        <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.4 5.4 0 0 1-9.54-5.54c.2-.7.54-1.34.98-1.9A9.1 9.1 0 0 0 12 3z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="notice" class="container"></div>
+
+  <main id="main">
+    <!-- JS가 data/*.json을 읽어 아래 섹션을 채운다 -->
+    <div id="boot" class="container boot">
+      <p>Loading…</p>
+      <p class="boot-help" hidden>
+        화면을 불러오지 못했습니다. data/*.js 파일의 문법 오류를 확인하고, F12 → Console 탭의 오류 메시지를 확인하세요.
+      </p>
+    </div>
+    <section id="hero" class="hero"></section>
+    <section id="about" class="section"></section>
+    <section id="skills" class="section"></section>
+    <section id="projects" class="section"></section>
+    <section id="experience" class="section"></section>
+    <section id="contact" class="section"></section>
+    <!-- ===== 기업 분석 (OpenDART 기업개황) — 공개 배포 시 profile.meta.companyTool = false ===== -->
+    <section id="company-tool" class="section" hidden>
+      <div class="container section-head">
+        <p style="margin:0 0 8px"><a href="#top">← 포트폴리오로 돌아가기</a></p>
+        <h2>기업 분석 <span class="badge badge-warn">개인용 도구</span></h2>
+        <p class="muted" style="margin:6px 0 0">OpenDART API 키를 입력하면 기업개황을 조회합니다. 공개 배포 전에는 이 섹션을 끄세요 (profile.meta.companyTool = false).</p>
+      </div>
+      <div class="container co-main">
+        <div class="co-card">
+          <h3>OpenDART 연결</h3>
+          <form id="dart-form" class="co-grid" autocomplete="off">
+            <label for="dart-key">API 키</label>
+            <div class="co-row">
+              <input class="co-input" id="dart-key" type="password" maxlength="40" spellcheck="false" placeholder="인증키 40자리">
+              <button class="btn" type="button" id="dart-toggle">보기</button>
+            </div>
+            <span></span>
+            <div class="co-row">
+              <label class="co-check"><input type="checkbox" id="dart-remember"> 이 브라우저에 키 기억하기</label>
+              <button class="btn btn-danger" type="button" id="dart-forget">저장된 키 삭제</button>
+              <button class="btn" type="button" data-env-load>.env 불러오기</button>
+            </div>
+            <label for="dart-proxy">중계(프록시)</label>
+            <select id="dart-proxy"></select>
+            <span></span>
+            <div id="dart-worker-row" hidden>
+              <input class="co-input" id="dart-worker" style="width:100%" spellcheck="false" placeholder="Worker 주소 (예: https://dart-proxy.내아이디.workers.dev)" aria-label="Worker 주소">
+            </div>
+            <span></span>
+            <div id="dart-custom-row" hidden>
+              <input class="co-input" id="dart-custom" style="width:100%" placeholder="https://내-프록시/?url={url}" aria-label="프록시 주소 템플릿">
+            </div>
+            <span></span>
+            <div class="co-row"><button class="btn btn-primary" type="submit">연결 테스트</button></div>
+          </form>
+          <p class="co-msg" id="dart-msg" role="status"></p>
+          <details class="co-help-box" id="dart-worker-help">
+            <summary>내 Cloudflare Worker 만드는 법 (무료 · 약 5분)</summary>
+            <ol>
+              <li><a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">Cloudflare</a>에 가입하고 로그인합니다.</li>
+              <li>왼쪽 메뉴 <b>Workers &amp; Pages</b> → <b>Create</b> → <b>Hello World</b> 템플릿으로 Worker 생성 → 이름(예: <code>dart-proxy</code>) 입력 → <b>Deploy</b>.
+                <span class="muted">(메뉴 이름은 Cloudflare 화면 개편에 따라 조금 다를 수 있습니다)</span></li>
+              <li><b>Edit code</b>를 눌러 기존 코드를 모두 지우고 아래 코드를 붙여넣은 뒤 <b>Deploy</b>.</li>
+              <li>화면에 표시된 주소(<code>https://dart-proxy.○○○.workers.dev</code>)를 위 <b>Worker 주소</b> 칸에 넣고 <b>연결 테스트</b>.</li>
+            </ol>
+            <div class="co-code-head"><span class="muted">worker.js</span><button class="btn" type="button" id="worker-copy">코드 복사</button></div>
+            <pre class="co-code" id="worker-code">// OpenDART 중계용 Cloudflare Worker
+// 브라우저 → (이 Worker) → opendart.fss.or.kr  : 응답에 CORS 헤더를 붙여 돌려준다.
+export default {
+  async fetch(request) {
+    const cors = {
+      &#x27;Access-Control-Allow-Origin&#x27;: &#x27;*&#x27;,
+      &#x27;Access-Control-Allow-Methods&#x27;: &#x27;GET, OPTIONS&#x27;,
+    };
+    if (request.method === &#x27;OPTIONS&#x27;) return new Response(null, { headers: cors });
+    if (request.method !== &#x27;GET&#x27;) return new Response(&#x27;Method not allowed&#x27;, { status: 405, headers: cors });
+
+    const url = new URL(request.url);
+    // OpenDART의 /api/*.json, /api/*.xml 만 중계 (아무 사이트나 중계하는 &#x27;열린 프록시&#x27;가 되지 않도록)
+    if (!/^\/api\/[A-Za-z0-9]+\.(json|xml)$/.test(url.pathname)) {
+      return new Response(&#x27;OpenDART relay: use /api/company.json?...&#x27;, { status: 404, headers: cors });
+    }
+
+    const res = await fetch(&#x27;https://opendart.fss.or.kr&#x27; + url.pathname + url.search);
+    const headers = new Headers(cors);
+    headers.set(&#x27;Content-Type&#x27;, res.headers.get(&#x27;Content-Type&#x27;) || &#x27;application/octet-stream&#x27;);
+    return new Response(res.body, { status: res.status, headers });
+  },
+};
+</pre>
+            <p class="co-help">이 Worker는 OpenDART의 <code>/api/</code> 경로만 중계하도록 막아 두었습니다. API 키는 내 Cloudflare 계정의 Worker만 거쳐 DART로 전달됩니다.</p>
+          </details>
+          <p class="co-warn">OpenDART는 브라우저에서 직접 호출하면 CORS로 차단되어, 외부 무료 프록시를 거칩니다.
+            <strong>내 Cloudflare Worker</strong>를 쓰면 키가 내 계정 안에서만 전달되고 안정적입니다.
+            공용 프록시는 <strong>API 키가 포함된 요청이 남의 서버를 통과</strong>하고, 수시로 막히거나 가입을 요구합니다.
+            키가 없다면 <a href="https://opendart.fss.or.kr/" target="_blank" rel="noopener">OpenDART</a>에서 신청하세요.</p>
+          <div class="co-row co-corp" id="corp-view"></div>
+        </div>
+        <div class="co-card">
+          <h3>기업 검색</h3>
+          <form id="search-form" class="co-search" role="search">
+            <input id="q" type="search" placeholder="회사명 또는 종목코드 (예: 한국전력, 015760)" autocomplete="off" aria-label="회사명">
+            <button class="btn btn-primary" type="submit">검색</button>
+          </form>
+          <p class="co-msg" id="search-msg" role="status"></p>
+          <ul class="co-results" id="results"></ul>
+        </div>
+        <div id="company" aria-live="polite"></div>
+      </div>
+    </section>
+    <!-- ===== 진로탐색 — 내용은 window.PORTFOLIO_DATA.career 에서 수정. 공개 배포 시 profile.meta.careerPage = false ===== -->
+    <section id="career-page" class="section" hidden>
+      <div class="container section-head">
+        <p style="margin:0 0 8px"><a href="#top">← 포트폴리오로 돌아가기</a></p>
+        <h2>진로탐색 <span class="badge badge-warn">개인용</span></h2>
+        <p class="muted" style="margin:6px 0 0" id="career-meta"></p>
+      </div>
+      <div class="container cr-main" id="career-body"></div>
+    </section>
+    <!-- ===== 자기소개서 작성 (#/extra) — 메뉴 이름은 profile.meta.extraMenu, "" 로 두면 숨김. 공개 배포 전에는 "" 로 ===== -->
+    <section id="extra-page" class="section" hidden>
+      <div class="container section-head">
+        <p style="margin:0 0 8px"><a href="#top">← 포트폴리오로 돌아가기</a></p>
+        <h2 id="extra-title"></h2>
+      </div>
+      <div class="container" id="extra-body"></div>
+    </section>
+  </main>
+
+  <div id="detail" class="detail" hidden>
+    <div class="detail-backdrop" data-close></div>
+    <article class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detail-title" tabindex="-1"></article>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container" id="footer"></div>
+  </footer>
+
+  <script>
+    // 스크립트 오류로 부팅이 안 되면 안내 문구를 보여준다
+    setTimeout(function () {
+      if (!window.__booted) {
+        var h = document.querySelector('.boot-help');
+        if (h) h.hidden = false;
+      }
+    }, 2000);
+  </script>
+  <!-- 한 파일 버전. 순서 중요: 데이터 → 번역표 → 렌더 함수 → 진입점 -->
+  <!-- ===== 데이터: 프로필 (이 부분만 수정) ===== -->
+  <script>
+// profile 데이터. 형식은 JSON과 같고, 맨 앞의 할당문만 다르다.
+// 주의: 마지막 항목 뒤 쉼표, 따옴표 짝을 확인할 것.
+window.PORTFOLIO_DATA = window.PORTFOLIO_DATA || {};
+window.PORTFOLIO_DATA.profile = {
+  "meta": {
+    "updated": "2026-09-30",
+    "showTodos": true,
+    "companyTool": true,
+    "careerPage": true,
+    "extraMenu": "자기소개서"
+  },
+  "name": {
+    "ko": "김채빈",
+    "en": "Chaebin Kim"
+  },
+  "headline": {
+    "ko": "JavaScript로 웹의 동작 원리를 공부하고 있는 컴퓨터융합학부 졸업예정자",
+    "en": "Computer Convergence student learning how the web works through JavaScript"
+  },
+  "intro": {
+    "ko": "맡은 일은 끝까지 해내는 편입니다. 모르는 부분은 직접 찾아보면서 배웁니다.",
+    "en": "I finish what I am given, and I learn what I don't know by looking it up myself."
+  },
+  "about": {
+    "ko": [
+      "목원대학교 컴퓨터융합학부에서 공부하고 있습니다. 외부 공모전이나 대외활동보다는 전공 수업과 혼자 하는 공부에 집중해 왔습니다.",
+      "JavaScript를 공부하면서 웹이 어떻게 동작하는지 익혔습니다. 개발 환경을 직접 세팅하다가 에러가 나면 검색하고 원인을 찾아가며 끝까지 해결해 보았습니다.",
+      "버추얼 3D 모델링을 포함한 버추얼 콘텐츠에 관심이 많고, 이 관심을 소프트웨어 기술과 연결해 보고 싶습니다."
+    ],
+    "en": [
+      "I study in the Division of Computer Convergence at Mokwon University. Rather than outside competitions, I have focused on my major courses and self-study.",
+      "Studying JavaScript, I learned how the web works. When I set up development environments on my own and ran into errors, I searched for the cause and fixed them.",
+      "I am interested in virtual content, including virtual 3D modeling, and want to connect that interest with software engineering."
+    ]
+  },
+  "skills": [
+    {
+      "name": "HTML",
+      "category": "Frontend",
+      "level": "used",
+      "evidence": []
+    },
+    {
+      "name": "CSS",
+      "category": "Frontend",
+      "level": "used",
+      "evidence": []
+    },
+    {
+      "name": "JavaScript",
+      "category": "Frontend",
+      "level": "used",
+      "evidence": []
+    }
+  ],
+  "education": [
+    {
+      "org": {
+        "ko": "목원대학교",
+        "en": "Mokwon University"
+      },
+      "title": {
+        "ko": "컴퓨터융합학부",
+        "en": "Division of Computer Convergence"
+      },
+      "period": "2022.03 –",
+      "status": {
+        "ko": "졸업예정",
+        "en": "Expected graduation"
+      },
+      "details": {
+        "ko": [
+          "직전학기 성적 94/100 (2026.05 이력서 기준)"
+        ],
+        "en": [
+          "Previous semester grade: 94/100 (as of May 2026)"
+        ]
+      }
+    }
+  ],
+  "experience": [
+    {
+      "org": {
+        "ko": "목원대학교",
+        "en": "Mokwon University"
+      },
+      "title": {
+        "ko": "근로장학생",
+        "en": "Work-study student"
+      },
+      "period": "",
+      "details": {
+        "ko": [
+          "강의실 관리",
+          "간단한 문서 작성"
+        ],
+        "en": [
+          "Managed lecture rooms",
+          "Prepared simple documents"
+        ]
+      }
+    },
+    {
+      "org": {
+        "ko": "아트박스",
+        "en": "ARTBOX (retail store)"
+      },
+      "title": {
+        "ko": "아르바이트",
+        "en": "Part-time staff"
+      },
+      "period": "2025.03 – 2026.05",
+      "details": {
+        "ko": [
+          "매장 손님 응대",
+          "상품 진열"
+        ],
+        "en": [
+          "Served customers in store",
+          "Arranged product displays"
+        ]
+      }
+    }
+  ],
+  "certificates": [],
+  "languages": [
+    {
+      "name": {
+        "ko": "한국어",
+        "en": "Korean"
+      },
+      "level": {
+        "ko": "모국어",
+        "en": "Native"
+      }
+    },
+    {
+      "name": {
+        "ko": "일본어",
+        "en": "Japanese"
+      },
+      "level": {}
+    },
+    {
+      "name": {
+        "ko": "영어",
+        "en": "English"
+      },
+      "level": {}
+    }
+  ],
+  "contact": {
+    "email": "cb10428@naver.com",
+    "github": "",
+    "linkedin": "",
+    "blog": ""
+  }
+};
+
+  </script>
+  <!-- ===== 데이터: 프로젝트 (이 부분만 수정) ===== -->
+  <script>
+// projects 데이터. 형식은 JSON과 같고, 맨 앞의 할당문만 다르다.
+// 주의: 마지막 항목 뒤 쉼표, 따옴표 짝을 확인할 것.
+window.PORTFOLIO_DATA = window.PORTFOLIO_DATA || {};
+window.PORTFOLIO_DATA.projects = [
+  {
+    "id": "sample-project",
+    "sample": true,
+    "featured": true,
+    "title": {
+      "ko": "[프로젝트 이름]"
+    },
+    "period": "YYYY.MM – YYYY.MM",
+    "team": {
+      "ko": "[개인 / 팀 N명 중 담당 파트]"
+    },
+    "summary": {
+      "ko": "[한 문장 소개: 누구의 어떤 문제를 무엇으로 해결했는가]"
+    },
+    "stack": [
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "problem": {
+      "ko": "[해결하려는 문제와 이 프로젝트를 시작한 이유]"
+    },
+    "role": {
+      "ko": [
+        "[내가 직접 구현한 부분 1]",
+        "[내가 직접 구현한 부분 2]"
+      ]
+    },
+    "features": {
+      "ko": [
+        "[핵심 기능 1]",
+        "[핵심 기능 2]"
+      ]
+    },
+    "decisions": {
+      "ko": [
+        "[A 대신 B를 선택한 이유 — 비교한 대안과 trade-off]"
+      ]
+    },
+    "challenges": [
+      {
+        "problem": {
+          "ko": "[발생한 문제]"
+        },
+        "cause": {
+          "ko": "[원인을 어떻게 찾았는가]"
+        },
+        "action": {
+          "ko": "[어떻게 수정했는가 — 관련 커밋/코드 링크가 있으면 첨부]"
+        },
+        "result": {
+          "ko": "[결과 — 수치가 있다면 측정 방법과 함께]"
+        }
+      }
+    ],
+    "result": {
+      "ko": "[실제 결과: 완성 범위, 배포 여부, 측정값 등]"
+    },
+    "lessons": {
+      "ko": "[배운 점과 다시 만든다면 바꿀 점]"
+    },
+    "links": [
+      {
+        "label": "GitHub",
+        "url": ""
+      },
+      {
+        "label": "Demo",
+        "url": ""
+      }
+    ]
+  }
+];
+
+  </script>
+  <!-- ===== 데이터: 진로탐색 (이 부분만 수정) ===== -->
+  <script>
+// 진로탐색 데이터. 사실만 적고, 출처(source)를 남긴다. 추측은 status/메모로 구분.
+// 빈 배열 [] 인 칸은 화면에 "아직 없음"으로 표시된다. 항목을 추가할 때는 아래 주석의 형식을 복사해서 쓴다.
+window.PORTFOLIO_DATA = window.PORTFOLIO_DATA || {};
+window.PORTFOLIO_DATA.career = {
+  "updated": "2026-09-30",
+
+  // 현재 진로 목표 한 문장 (아직 정하지 않았으면 "" 로 둔다)
+  "goal": "",
+
+  // 지원 방향. status: "준비중" | "탐색중" | "보류" | "제외"
+  // targets: [{ "name": "기업명", "role": "직무", "url": "공고 URL", "status": "관심" | "지원예정" | "지원완료" | "결과대기" | "합격" | "불합격" }]
+  "tracks": [
+    { "id": "A", "name": "한국 공기업", "status": "탐색중", "focus": "직무기술서(NCS) 적합성과 객관적 근거", "targets": [], "notes": [] },
+    { "id": "B", "name": "일본 / ANYCOLOR", "status": "탐색중", "focus": "공식 모집요강 기준 기술·언어 요건", "targets": [], "notes": ["포트폴리오 일본어 번역을 삭제함(2026-09-30) — 이 방향을 계속 준비할지 확인 필요"] },
+    { "id": "C", "name": "해외 기업", "status": "탐색중", "focus": "GitHub · 영문 문서 · 기술 선택 이유", "targets": [], "notes": [] }
+  ],
+
+  // 관심 직무 후보. status: "탐색중" | "유력" | "보류" | "제외"
+  // { "name": "직무명", "status": "탐색중", "why": "관심 이유", "evidence": ["이미 가진 근거"], "gap": ["부족한 점"] }
+  // sample: true 인 항목은 화면에 "예시" 표시가 붙는다. 실제로 검토한 뒤 sample 을 지우거나 false 로 바꾼다.
+  "jobs": [
+    { "name": "웹 프론트엔드 개발", "status": "탐색중", "sample": true,
+      "why": "JavaScript를 독학하며 웹의 동작 원리를 공부해 왔음",
+      "evidence": ["JavaScript 독학, 개발 환경 에러 해결 경험 (자기소개서 · 자기 평가)"],
+      "gap": ["공개된 프로젝트·GitHub 코드가 없음", "사용해 본 프레임워크 확인 필요"] },
+    { "name": "공기업 IT/전산직", "status": "탐색중", "sample": true,
+      "why": "지원 방향 A(한국 공기업)와 직접 연결되는 직무",
+      "evidence": ["컴퓨터융합학부 전공", "직전학기 성적 94/100 (이력서 2026.05)"],
+      "gap": ["자격증 없음 — 기관별 공고의 자격·우대 요건 확인 필요", "NCS 직업기초능력 준비 여부 확인 필요"] },
+    { "name": "버추얼 콘텐츠 관련 개발", "status": "탐색중", "sample": true,
+      "why": "버추얼 3D 모델링 등 버추얼 콘텐츠에 관심이 있음 (지원 방향 B와 연결 가능)",
+      "evidence": ["버추얼 콘텐츠 관심 (자기소개서 · 자기 평가)"],
+      "gap": ["3D·그래픽스 관련 경험 확인 안 됨", "실제 모집 직무는 기업 공식 채용공고로 확인 필요"] },
+    { "name": "IT 서비스 운영", "status": "보류", "sample": true,
+      "why": "사용자 응대와 문서 작업 경험을 IT 서비스와 연결할 수 있는 직무",
+      "evidence": ["아트박스 손님 응대 (2025.03 – 2026.05)", "근로장학생 문서 작성"],
+      "gap": ["IT 서비스 운영 관련 경험 없음", "관심 여부 확인 필요"] }
+  ],
+
+  // 홀랜드 RIASEC 흥미 검사 결과. 점수는 0~100.
+  // sample: true 이면 "임의 생성 예시" 경고가 표시된다. 실제 검사를 받으면 점수·date·source 를 바꾸고 sample 을 false 로.
+  "riasec": {
+    "sample": true,
+    "source": "임의 생성 예시 (실제 검사 결과 아님)",
+    "date": "2026-09-30",
+    "scores": { "R": 61, "I": 82, "A": 58, "S": 40, "E": 33, "C": 74 },
+    "note": "실제 검사: 고용24(구 워크넷) 직업심리검사의 직업선호도검사 등에서 흥미 유형을 확인할 수 있음 (현재 제공 여부는 사이트에서 확인)"
+  },
+
+  // 관심사 / 강점 / 약점. source 에 근거 자료를 적는다. verified: 객관적 근거가 있으면 true, 자기 평가면 false
+  "interests": [
+    { "text": "버추얼 3D 모델링 등 버추얼 콘텐츠와 융합 기술", "source": "자기소개서 (2026.05)", "verified": false }
+  ],
+  "strengths": [
+    { "text": "모르는 것은 직접 찾아 해결함 — JavaScript 독학, 개발 환경 에러를 검색하며 해결", "source": "자기소개서 (2026.05)", "verified": false },
+    { "text": "맡은 일은 끝까지 수행함", "source": "자기소개서 (2026.05)", "verified": false }
+  ],
+  "weaknesses": [
+    { "text": "이력서에 적을 프로젝트·대외활동 경험이 없음", "source": "이력서 (2026.05)", "verified": true },
+    { "text": "자격증·어학 점수 없음", "source": "이력서 (2026.05)", "verified": true }
+  ],
+
+  // 탐색 기록 (최근 것이 위로 오도록 자동 정렬). date: "YYYY-MM-DD" 또는 "YYYY-MM"
+  // { "date": "2026-10-01", "title": "무엇을 했는가", "note": "알게 된 점" }
+  "log": [
+    { "date": "2026-05", "title": "유토비즈 지원용 이력서·자기소개서 작성", "note": "지원 결과 — 기록 필요" },
+    { "date": "2026-09-30", "title": "포트폴리오 페이지에 이력서 내용 반영", "note": "프로젝트 항목이 비어 있음을 확인" },
+    { "date": "2026-09-30", "title": "진로탐색 페이지에 예시 RIASEC 결과와 예시 직무 후보 입력", "note": "둘 다 임의 생성 예시 — 실제 검사와 검토 후 교체 필요" }
+  ],
+
+  // 지금 할 일 (1~3개만). done: 완료 기준, effort: 예상 작업량, checked: 끝났으면 true
+  "nextActions": [
+    { "title": "실제 참여한 프로젝트 1개 정하기", "why": "모든 지원 방향에서 기술 역량을 증명할 근거가 현재 없음", "done": "프로젝트 이름, 기간, 본인이 직접 한 일 3줄 정리", "effort": "1~2시간", "checked": false },
+    { "title": "예시 직무 후보를 검토해 실제 후보 2~3개만 남기기", "why": "지금 후보는 임의로 만든 예시라서, 직무가 정해져야 지원 기업과 준비 순서를 좁힐 수 있음", "done": "관심 직무 후보에서 2~3개를 남기고 sample 표시 제거", "effort": "30분", "checked": false },
+    { "title": "실제 홀랜드(RIASEC) 흥미 검사 받기", "why": "지금 결과는 임의로 만든 예시라 진로 판단 근거로 쓸 수 없음", "done": "실제 검사 점수로 riasec 데이터 교체, sample 을 false 로 변경", "effort": "30분~1시간", "checked": false }
+  ]
+};
+  </script>
+  <!-- ===== js/i18n.js ===== -->
+  <script>
+// 화면 고정 문구(UI 라벨) 번역표.
+// 콘텐츠(이름, 프로젝트 설명 등)는 여기 넣지 않고 data/*.json 에서 관리한다.
+window.App = window.App || {};
+App.LANGS = ['ko', 'en'];
+
+App.UI = {
+  ko: {
+    nav: { about: '소개', skills: '기술', projects: '프로젝트', experience: '학력·경력', contact: '연락처' },
+    todo: '정보 입력 필요',
+    needsEvidence: '근거 필요',
+    translationPending: '번역 대기',
+    sample: '예시',
+    sampleBanner: '예시(샘플) 데이터가 포함되어 있습니다. 공개 전에 data/projects.json 의 "sample": true 항목을 실제 내용으로 교체하거나 삭제하세요.',
+    draftBanner: '초안 모드: 비어 있는 항목이 “정보 입력 필요”로 표시됩니다. 공개 시 data/profile.json 의 meta.showTodos 를 false 로 바꾸세요.',
+    headlineFallback: '컴퓨터공학 전공 졸업예정자',
+    filterAll: '전체',
+    viewDetail: '자세히 보기',
+    close: '닫기',
+    noProjects: '등록된 프로젝트가 없습니다.',
+    levels: { used: '사용 경험', learning: '학습 중' },
+    evidenceIn: '근거',
+    d: {
+      overview: '개요', period: '기간', team: '팀 구성', problem: '해결하려는 문제', role: '내가 담당한 부분',
+      features: '핵심 기능', stack: '기술 스택', decisions: '기술 선택 이유', challenges: '문제 해결 과정',
+      result: '결과', lessons: '배운 점', links: '링크'
+    },
+    ch: { problem: '문제', cause: '원인', action: '조치', result: '결과' },
+    ex: { education: '학력', experience: '경력·대외활동', certificates: '자격증', languages: '어학' },
+    cert: { acquired: '취득', preparing: '준비 중' },
+    updated: '마지막 업데이트'
+  },
+  en: {
+    nav: { about: 'About', skills: 'Skills', projects: 'Projects', experience: 'Experience', contact: 'Contact' },
+    todo: 'To be added',
+    needsEvidence: 'Evidence needed',
+    translationPending: 'Translation pending',
+    sample: 'Sample',
+    sampleBanner: 'This page contains sample data. Before publishing, replace or delete the "sample": true entries in data/projects.json.',
+    draftBanner: 'Draft mode: empty fields are shown as placeholders. Set meta.showTodos to false in data/profile.json before publishing.',
+    headlineFallback: 'Computer Engineering student (expected graduate)',
+    filterAll: 'All',
+    viewDetail: 'View details',
+    close: 'Close',
+    noProjects: 'No projects yet.',
+    levels: { used: 'Hands-on', learning: 'Learning' },
+    evidenceIn: 'Evidence',
+    d: {
+      overview: 'Overview', period: 'Period', team: 'Team', problem: 'Problem', role: 'My role',
+      features: 'Key features', stack: 'Tech stack', decisions: 'Technical decisions', challenges: 'Challenges & fixes',
+      result: 'Result', lessons: 'Lessons learned', links: 'Links'
+    },
+    ch: { problem: 'Problem', cause: 'Cause', action: 'Action', result: 'Result' },
+    ex: { education: 'Education', experience: 'Experience & activities', certificates: 'Certificates', languages: 'Languages' },
+    cert: { acquired: 'Acquired', preparing: 'In progress' },
+    updated: 'Last updated'
+  }
+};
+
+  </script>
+  <!-- ===== js/render.js ===== -->
+  <script>
+// 데이터(JSON) → HTML 문자열로 바꾸는 순수 함수 모음.
+// 상태(state)를 직접 바꾸지 않고, 받은 값으로 화면 조각만 만든다.
+(function () {
+  const { UI } = window.App;
+
+const esc = (v) =>
+  String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const filled = (v) =>
+  Array.isArray(v) ? v.length > 0 : typeof v === 'string' ? v.trim() !== '' : v != null;
+
+// 안전한 링크만 허용 (javascript: 같은 스킴 차단)
+const safeUrl = (u) => (/^(https?:|mailto:)/i.test(u || '') ? u : '');
+
+/**
+ * 렌더링 컨텍스트: 현재 언어와 데이터를 묶어 두고 헬퍼를 제공한다.
+ * 다국어 필드는 { ko, en } 형태이며, 현재 언어가 비어 있으면 다른 언어로 대체(fallback)한다.
+ */
+function createCtx(lang, data) {
+  const ui = UI[lang];
+  const showTodos = data.profile.meta?.showTodos !== false;
+
+  function pick(field) {
+    if (field == null) return { value: null };
+    if (typeof field === 'string' || Array.isArray(field)) return { value: filled(field) ? field : null };
+    if (filled(field[lang])) return { value: field[lang] };
+    for (const l of ['ko', 'en']) if (filled(field[l])) return { value: field[l], from: l };
+    return { value: null };
+  }
+
+  const todo = () => (showTodos ? `<span class="todo">${esc(ui.todo)}</span>` : '');
+  const pending = (from) =>
+    from && showTodos ? ` <span class="badge badge-pending" title="${esc(from)}">${esc(ui.translationPending)}</span>` : '';
+
+  /** 단일 텍스트 필드 */
+  function text(field, { fallback } = {}) {
+    const { value, from } = pick(field);
+    if (value == null) return fallback != null ? esc(fallback) : todo();
+    const body = from ? `<span lang="${from}">${esc(value)}</span>` : esc(value);
+    return body + pending(from);
+  }
+
+  /** 배열 필드 → <ul> */
+  function list(field, cls = 'bullets') {
+    const { value, from } = pick(field);
+    if (value == null) return todo();
+    const items = [].concat(value).map((v) => `<li>${esc(v)}</li>`).join('');
+    return `<ul class="${cls}"${from ? ` lang="${from}"` : ''}>${items}</ul>${pending(from)}`;
+  }
+
+  const has = (field) => pick(field).value != null;
+
+  return { lang, ui, data, showTodos, pick, text, list, has, todo };
+}
+
+const sectionHead = (id, title) => `
+  <div class="container section-head">
+    <h2 id="${id}-title">${esc(title)}</h2>
+  </div>`;
+
+/* ---------------- 섹션별 렌더러 ---------------- */
+
+function nav(ctx) {
+  return Object.entries(ctx.ui.nav)
+    .filter(([id]) => id !== 'contact') // 상단 메뉴에서 연락처 제외 (연락처 섹션과 첫 화면의 연락처 버튼은 유지)
+    .map(([id, label]) => `<a href="#${id}" data-nav="${id}">${esc(label)}</a>`)
+    .join('') +
+    (ctx.data.profile.meta?.careerPage !== false ? '<a href="#/career" data-nav="career-page">진로탐색</a>' : '') +
+    (ctx.data.profile.meta?.companyTool !== false ? '<a href="#/company" data-nav="company-tool">기업분석</a>' : '') +
+    (ctx.data.profile.meta?.extraMenu ? `<a href="#/extra" data-nav="extra-page">${esc(ctx.data.profile.meta.extraMenu)}</a>` : '');
+}
+
+function hero(ctx) {
+  const p = ctx.data.profile;
+  const edu = p.education?.[0];
+  const gh = safeUrl(p.contact?.github);
+  return `
+  <div class="container hero-inner">
+    <p class="eyebrow">${edu ? `${ctx.text(edu.org)} · ${ctx.text(edu.title)}` : ''}</p>
+    <h1 class="hero-name">${ctx.text(p.name)}</h1>
+    <p class="hero-headline">${ctx.text(p.headline, { fallback: ctx.ui.headlineFallback })}</p>
+    <p class="hero-intro">${ctx.text(p.intro)}</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#projects">${esc(ctx.ui.nav.projects)}</a>
+      <a class="btn" href="#contact">${esc(ctx.ui.nav.contact)}</a>
+      ${gh ? `<a class="btn" href="${esc(gh)}" target="_blank" rel="noopener">GitHub</a>` : ''}
+    </div>
+  </div>`;
+}
+
+function about(ctx) {
+  const { value, from } = ctx.pick(ctx.data.profile.about);
+  const body = value
+    ? [].concat(value).map((para) => `<p${from ? ` lang="${from}"` : ''}>${esc(para)}</p>`).join('')
+    : `<p>${ctx.todo()}</p>`;
+  return `${sectionHead('about', ctx.ui.nav.about)}
+  <div class="container"><div class="prose">${body}</div></div>`;
+}
+
+function skills(ctx) {
+  const { skills = [] } = ctx.data.profile;
+  const projects = ctx.data.projects;
+  if (!skills.length) return `${sectionHead('skills', ctx.ui.nav.skills)}<div class="container">${ctx.todo()}</div>`;
+
+  // 카테고리별로 묶기
+  const groups = skills.reduce((acc, s) => ((acc[s.category || 'Etc'] ||= []).push(s), acc), {});
+
+  const evidence = (ids = []) => {
+    const found = ids.map((id) => projects.find((p) => p.id === id)).filter(Boolean);
+    if (!found.length) return ctx.showTodos ? `<span class="badge badge-warn">${esc(ctx.ui.needsEvidence)}</span>` : '';
+    return found
+      .map((p) => `<a class="evidence-link" href="#/project/${encodeURIComponent(p.id)}">${ctx.text(p.title)}</a>`)
+      .join('');
+  };
+
+  const html = Object.entries(groups)
+    .map(
+      ([cat, items]) => `
+      <div class="skill-group">
+        <h3>${esc(cat)}</h3>
+        <ul class="skill-list">
+          ${items
+            .map(
+              (s) => `
+            <li class="skill">
+              <div class="skill-top">
+                <span class="skill-name">${esc(s.name)}</span>
+                <span class="badge badge-${s.level === 'used' ? 'ok' : 'soft'}">${esc(ctx.ui.levels[s.level] || s.level)}</span>
+              </div>
+              <div class="skill-evidence">${evidence(s.evidence)}</div>
+            </li>`
+            )
+            .join('')}
+        </ul>
+      </div>`
+    )
+    .join('');
+
+  return `${sectionHead('skills', ctx.ui.nav.skills)}<div class="container skill-groups">${html}</div>`;
+}
+
+function projectsSection(ctx, filter) {
+  const all = ctx.data.projects;
+  const stacks = [...new Set(all.flatMap((p) => p.stack || []))];
+  const chips = ['all', ...stacks]
+    .map(
+      (s) => `<button type="button" class="chip" data-filter="${esc(s)}" aria-pressed="${s === filter}">${esc(
+        s === 'all' ? ctx.ui.filterAll : s
+      )}</button>`
+    )
+    .join('');
+
+  return `${sectionHead('projects', ctx.ui.nav.projects)}
+  <div class="container">
+    ${stacks.length ? `<div class="filters" role="group" aria-label="Filter">${chips}</div>` : ''}
+    <div class="project-grid" id="project-grid">${projectCards(ctx, filter)}</div>
+  </div>`;
+}
+
+function projectCards(ctx, filter) {
+  const list = ctx.data.projects
+    .filter((p) => filter === 'all' || (p.stack || []).includes(filter))
+    .sort((a, b) => (b.featured === true) - (a.featured === true));
+  if (!list.length) return `<p class="muted">${esc(ctx.ui.noProjects)}</p>`;
+
+  return list
+    .map(
+      (p) => `
+    <article class="card project-card${p.sample ? ' is-sample' : ''}">
+      <div class="card-meta">
+        <span>${esc(p.period || '')}</span>
+        ${p.sample ? `<span class="badge badge-warn">${esc(ctx.ui.sample)}</span>` : ''}
+      </div>
+      <h3>${ctx.text(p.title)}</h3>
+      <p class="card-summary">${ctx.text(p.summary)}</p>
+      <div class="tags">${(p.stack || []).map((s) => `<span class="tag">${esc(s)}</span>`).join('')}</div>
+      <a class="card-link" href="#/project/${encodeURIComponent(p.id)}">${esc(ctx.ui.viewDetail)} →</a>
+    </article>`
+    )
+    .join('');
+}
+
+function experience(ctx) {
+  const p = ctx.data.profile;
+  const ex = ctx.ui.ex;
+
+  const timeline = (items) =>
+    items.length
+      ? `<ol class="timeline">${items
+          .map(
+            (e) => `
+        <li>
+          <div class="tl-period">${esc(e.period) || ctx.todo()}</div>
+          <div class="tl-body">
+            <h4>${ctx.text(e.org)}</h4>
+            <p>${ctx.text(e.title)}${e.status ? ` · ${ctx.text(e.status)}` : ''}</p>
+            ${ctx.has(e.details) ? ctx.list(e.details) : ''}
+          </div>
+        </li>`
+          )
+          .join('')}</ol>`
+      : `<p>${ctx.todo()}</p>`;
+
+  const certs = (p.certificates || []).length
+    ? `<ul class="plain">${p.certificates
+        .map(
+          (c) => `<li><strong>${ctx.text(c.name)}</strong>
+            <span class="badge badge-${c.status === 'acquired' ? 'ok' : 'soft'}">${esc(ctx.ui.cert[c.status] || c.status || '')}</span>
+            <span class="muted">${esc(c.date || '')}</span></li>`
+        )
+        .join('')}</ul>`
+    : `<p>${ctx.todo()}</p>`;
+
+  const langs = (p.languages || []).length
+    ? `<ul class="plain">${p.languages
+        .map((l) => `<li><strong>${ctx.text(l.name)}</strong> — ${ctx.text(l.level)}</li>`)
+        .join('')}</ul>`
+    : `<p>${ctx.todo()}</p>`;
+
+  // 공개 모드에서 비어 있는 블록은 통째로 숨긴다
+  const block = (title, arr, html) =>
+    !ctx.showTodos && !(arr || []).length ? '' : `<div class="ex-block"><h3>${esc(title)}</h3>${html}</div>`;
+
+  return `${sectionHead('experience', ctx.ui.nav.experience)}
+  <div class="container ex-grid">
+    ${block(ex.education, p.education, timeline(p.education || []))}
+    ${block(ex.experience, p.experience, timeline(p.experience || []))}
+    ${block(ex.certificates, p.certificates, certs)}
+    ${block(ex.languages, p.languages, langs)}
+  </div>`;
+}
+
+function contact(ctx) {
+  const c = ctx.data.profile.contact || {};
+  const rows = [
+    ['Email', c.email ? `mailto:${c.email}` : '', c.email],
+    ['GitHub', safeUrl(c.github), c.github],
+    ['LinkedIn', safeUrl(c.linkedin), c.linkedin],
+    ['Blog', safeUrl(c.blog), c.blog]
+  ];
+  const html = rows
+    .filter(([, url]) => url || ctx.showTodos)
+    .map(
+      ([label, url, shown]) => `
+      <li><span class="contact-label">${label}</span>
+        ${url ? `<a href="${esc(url)}"${label !== 'Email' ? ' target="_blank" rel="noopener"' : ''}>${esc(shown)}</a>` : ctx.todo()}
+      </li>`
+    )
+    .join('');
+  return `${sectionHead('contact', ctx.ui.nav.contact)}<div class="container"><ul class="contact-list">${html}</ul></div>`;
+}
+
+function detail(ctx, p) {
+  const d = ctx.ui.d;
+  const sec = (label, body) => (body ? `<section><h3>${esc(label)}</h3>${body}</section>` : '');
+  const opt = (field, fn) => (ctx.has(field) || ctx.showTodos ? fn(field) : '');
+
+  const challenges = (p.challenges || []).length
+    ? p.challenges
+        .map(
+          (c, i) => `
+      <div class="challenge">
+        <p class="challenge-no">#${i + 1}</p>
+        <dl>
+          ${['problem', 'cause', 'action', 'result']
+            .map((k) => `<dt>${esc(ctx.ui.ch[k])}</dt><dd>${ctx.text(c[k])}</dd>`)
+            .join('')}
+        </dl>
+      </div>`
+        )
+        .join('')
+    : ctx.showTodos ? ctx.todo() : '';
+
+  const links = (p.links || []).filter((l) => safeUrl(l.url) || ctx.showTodos);
+  const linkHtml = links.length
+    ? `<ul class="link-row">${links
+        .map((l) =>
+          safeUrl(l.url)
+            ? `<li><a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`
+            : `<li><span class="btn is-disabled">${esc(l.label)}</span> ${ctx.todo()}</li>`
+        )
+        .join('')}</ul>`
+    : '';
+
+  return `
+    <header class="detail-head">
+      <div>
+        <p class="eyebrow">${esc(p.period || '')} ${p.sample ? `<span class="badge badge-warn">${esc(ctx.ui.sample)}</span>` : ''}</p>
+        <h2 id="detail-title">${ctx.text(p.title)}</h2>
+        <p class="detail-summary">${ctx.text(p.summary)}</p>
+      </div>
+      <a class="icon-btn" href="#projects" data-close aria-label="${esc(ctx.ui.close)}">✕</a>
+    </header>
+    <div class="detail-body">
+      <div class="detail-facts">
+        <div><span>${esc(d.team)}</span><div>${ctx.text(p.team)}</div></div>
+        <div><span>${esc(d.stack)}</span><div class="tags">${(p.stack || []).map((s) => `<span class="tag">${esc(s)}</span>`).join('')}</div></div>
+      </div>
+      ${sec(d.problem, opt(p.problem, (f) => `<p>${ctx.text(f)}</p>`))}
+      ${sec(d.role, opt(p.role, (f) => ctx.list(f)))}
+      ${sec(d.features, opt(p.features, (f) => ctx.list(f)))}
+      ${sec(d.decisions, opt(p.decisions, (f) => ctx.list(f)))}
+      ${sec(d.challenges, challenges)}
+      ${sec(d.result, opt(p.result, (f) => `<p>${ctx.text(f)}</p>`))}
+      ${sec(d.lessons, opt(p.lessons, (f) => `<p>${ctx.text(f)}</p>`))}
+      ${sec(d.links, linkHtml)}
+    </div>`;
+}
+
+function notices(ctx) {
+  const out = [];
+  if (ctx.data.projects.some((p) => p.sample)) out.push(`<div class="notice notice-warn">${esc(ctx.ui.sampleBanner)}</div>`);
+  if (ctx.showTodos) out.push(`<div class="notice">${esc(ctx.ui.draftBanner)}</div>`);
+  return out.join('');
+}
+
+function footer(ctx) {
+  const name = ctx.pick(ctx.data.profile.name).value;
+  return `<p>© ${new Date().getFullYear()} ${esc(name || '')}</p>
+          <p class="muted">${esc(ctx.ui.updated)}: ${esc(ctx.data.profile.meta?.updated || '')}</p>`;
+}
+
+  window.App.R = { esc, createCtx, nav, hero, about, skills, projectsSection, projectCards, experience, contact, detail, notices, footer };
+})();
+
+  </script>
+  <!-- ===== js/main.js ===== -->
+  <script>
+// 진입점: 데이터 로드 → 상태 관리 → 렌더링 → 이벤트 처리
+(function () {
+const { LANGS, R } = window.App;
+
+const $ = (sel) => document.querySelector(sel);
+
+const state = {
+  lang: 'ko',
+  filter: 'all',
+  data: null,
+  lastFocus: null // 상세 패널을 닫을 때 포커스를 되돌릴 요소
+};
+
+/* ---------- 저장소 (실패해도 동작하도록 try/catch) ---------- */
+const store = {
+  get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* 무시 */ } }
+};
+
+/* ---------- 데이터 로드 ----------
+ * data/profile.js, data/projects.js 가 <script>로 먼저 로드되어
+ * window.PORTFOLIO_DATA 에 값을 넣어 둔다. (fetch를 쓰지 않으므로 더블클릭으로 열어도 동작)
+ */
+function loadData() {
+  const d = window.PORTFOLIO_DATA || {};
+  if (!d.profile) throw new Error('data/profile.js 를 읽지 못했습니다 (문법 오류 또는 파일 누락)');
+  if (!d.projects) throw new Error('data/projects.js 를 읽지 못했습니다 (문법 오류 또는 파일 누락)');
+  return { profile: d.profile, projects: d.projects };
+}
+
+/* ---------- 언어 결정: URL ?lang= > 저장값 > 브라우저 언어 > ko ---------- */
+function initialLang() {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (LANGS.includes(q)) return q;
+  const saved = store.get('lang');
+  if (LANGS.includes(saved)) return saved;
+  const nav = (navigator.language || '').slice(0, 2);
+  return LANGS.includes(nav) ? nav : 'ko';
+}
+
+/* ---------- 렌더링 ---------- */
+function renderAll() {
+  const ctx = R.createCtx(state.lang, state.data);
+  document.documentElement.lang = state.lang;
+
+  const name = ctx.pick(state.data.profile.name).value;
+  document.title = name ? `${name} | Portfolio` : 'Portfolio';
+  $('#brand').textContent = name || 'Portfolio';
+
+  $('#nav-links').innerHTML = R.nav(ctx);
+  $('#notice').innerHTML = R.notices(ctx);
+  $('#hero').innerHTML = R.hero(ctx);
+  $('#about').innerHTML = R.about(ctx);
+  $('#skills').innerHTML = R.skills(ctx);
+  $('#projects').innerHTML = R.projectsSection(ctx, state.filter);
+  $('#experience').innerHTML = R.experience(ctx);
+  $('#contact').innerHTML = R.contact(ctx);
+  $('#footer').innerHTML = R.footer(ctx);
+
+  document.querySelectorAll('[data-lang]').forEach((b) =>
+    b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang))
+  );
+
+  route(); // 상세 패널이 열려 있으면 현재 언어로 다시 그림
+  observeSections();
+}
+
+function renderProjectGrid() {
+  const ctx = R.createCtx(state.lang, state.data);
+  $('#project-grid').innerHTML = R.projectCards(ctx, state.filter);
+  document.querySelectorAll('[data-filter]').forEach((b) =>
+    b.setAttribute('aria-pressed', String(b.dataset.filter === state.filter))
+  );
+}
+
+/* ---------- 해시 라우팅: #/project/<id> 이면 상세 패널 열기 ---------- */
+function route() {
+  const m = location.hash.match(/^#\/project\/(.+)$/);
+  const panel = $('#detail');
+  if (!m) {
+    if (!panel.hidden) closeDetail();
+    return;
+  }
+  const project = state.data.projects.find((p) => p.id === decodeURIComponent(m[1]));
+  if (!project) {
+    history.replaceState(null, '', '#projects');
+    return closeDetail();
+  }
+  if (panel.hidden) state.lastFocus = document.activeElement;
+  const ctx = R.createCtx(state.lang, state.data);
+  panel.querySelector('.detail-panel').innerHTML = R.detail(ctx, project);
+  panel.hidden = false;
+  document.body.classList.add('no-scroll');
+  panel.querySelector('.detail-panel').focus();
+}
+
+function closeDetail() {
+  $('#detail').hidden = true;
+  document.body.classList.remove('no-scroll');
+  if (state.lastFocus && document.contains(state.lastFocus)) state.lastFocus.focus();
+  state.lastFocus = null;
+}
+
+/* ---------- 스크롤 위치에 따라 내비게이션 활성화 ---------- */
+let observer;
+function observeSections() {
+  observer?.disconnect();
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        document.querySelectorAll('[data-nav]').forEach((a) =>
+          a.classList.toggle('active', a.dataset.nav === e.target.id)
+        );
+      });
+    },
+    { rootMargin: '-45% 0px -50% 0px' }
+  );
+  document.querySelectorAll('main > section[id]').forEach((s) => observer.observe(s));
+}
+
+/* ---------- 이벤트 ---------- */
+function bindEvents() {
+  document.addEventListener('click', (e) => {
+    const langBtn = e.target.closest('[data-lang]');
+    if (langBtn) {
+      state.lang = langBtn.dataset.lang;
+      store.set('lang', state.lang);
+      const url = new URL(location.href);
+      url.searchParams.set('lang', state.lang); // 언어별로 링크 공유 가능: ?lang=en
+      history.replaceState(null, '', url);
+      renderAll();
+      return;
+    }
+
+    const filterBtn = e.target.closest('[data-filter]');
+    if (filterBtn) {
+      state.filter = filterBtn.dataset.filter;
+      renderProjectGrid();
+      return;
+    }
+
+    if (e.target.closest('[data-close]')) {
+      e.preventDefault();
+      location.hash = '#projects';
+    }
+  });
+
+  $('#theme-toggle').addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    store.set('theme', next);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !$('#detail').hidden) location.hash = '#projects';
+  });
+
+  window.addEventListener('hashchange', route);
+}
+
+/* ---------- 시작 ---------- */
+(function boot() {
+  try {
+    state.data = loadData();
+    state.lang = initialLang();
+    window.__booted = true;
+    $('#boot').remove();
+    bindEvents();
+    renderAll();
+  } catch (err) {
+    window.__booted = true;
+    console.error(err);
+    $('#boot').innerHTML = `<p><strong>데이터를 불러오지 못했습니다.</strong></p>
+      <p class="muted">${R.esc(err.message)}</p>
+      <p class="muted">data/*.js 의 문법 오류(쉼표, 따옴표, 중괄호)를 확인하세요. F12 → Console 탭에 오류 위치가 표시됩니다.</p>`;
+  }
+})();
+})();
+
+  </script>
+  <!-- ===== .env 불러오기 (Gemini·DART 키) ===== -->
+  <script>
+// HTML 파일은 보안상 같은 폴더의 .env를 스스로 읽을 수 없다.
+// 그래서 [.env 불러오기] 버튼으로 사용자가 파일을 직접 고르면, 그 내용을 읽어 키 입력칸에 채운다.
+// 읽는 키: GEMINI_API_KEY, GEMINI_MODEL, DART_API_KEY, DART_WORKER_URL
+(function () {
+  window.App = window.App || {};
+  function parseEnv(text) {
+    const out = {};
+    String(text).replace(/^﻿/, '').split(/\r?\n/).forEach((line) => {
+      const m = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
+      if (!m) return;                      // 빈 줄, # 주석 등은 무시
+      let v = m[2].trim();
+      if (/^(["']).*\1$/.test(v)) v = v.slice(1, -1);   // 따옴표로 감싼 값
+      else v = v.replace(/\s+#.*$/, '').trim();          // 값 뒤의 # 주석 제거
+      out[m[1]] = v;
+    });
+    return out;
+  }
+  window.App.parseEnv = parseEnv;
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-env-load]');
+    if (!btn) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.addEventListener('change', async () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      if (file.size > 64 * 1024) { alertMsg(btn, '파일이 너무 큽니다. .env 파일을 골라 주세요.', true); return; }
+      const env = parseEnv(await file.text());
+      const known = ['GEMINI_API_KEY', 'GEMINI_MODEL', 'DART_API_KEY', 'DART_WORKER_URL'].filter((k) => env[k] && !/^여기에|^your_|^<|붙여넣/i.test(env[k]));
+      if (!known.length) { alertMsg(btn, '키를 찾지 못했습니다. .env에 GEMINI_API_KEY= 또는 DART_API_KEY= 줄이 있는지, 값을 채웠는지 확인하세요.', true); return; }
+      const detail = {};
+      known.forEach((k) => (detail[k] = env[k]));
+      window.dispatchEvent(new CustomEvent('env:loaded', { detail }));
+      alertMsg(btn, `.env에서 불러옴: ${known.join(', ')}`);   // 값은 화면에 보여 주지 않는다
+    });
+    input.click();
+  });
+  // 버튼 근처의 메시지 칸에 결과 표시
+  function alertMsg(btn, text, err) {
+    const card = btn.closest('.co-card');
+    const el = card && card.querySelector('#dart-msg, #g-msg');
+    if (el) { el.textContent = text; el.classList.toggle('is-error', !!err); }
+  }
+})();
+  </script>
+  <!-- ===== 기업 분석 (OpenDART) 스크립트 ===== -->
+  <script>
+// ===== 기업 분석 (OpenDART 기업개황) — HTML 파일 하나로 동작 =====
+// 흐름: API 키 입력 → [CORS 프록시] → OpenDART → 화면
+// OpenDART는 브라우저 직접 호출을 CORS로 막기 때문에, 응답에 CORS 헤더를 붙여 주는 외부 프록시를 거친다.
+// 주의: 프록시를 쓰면 요청 URL(API 키 포함)이 그 프록시 운영자 서버를 통과한다.
+(function () {
+  const $ = (s) => document.querySelector(s);
+  const esc = (v) =>
+    String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const meta = (window.PORTFOLIO_DATA && window.PORTFOLIO_DATA.profile && window.PORTFOLIO_DATA.profile.meta) || {};
+  const section = $('#company-tool');
+  if (meta.companyTool === false) return; // 공개 배포 시 profile.meta.companyTool = false 로 숨김
+  section.hidden = false;
+
+  const DART = 'https://opendart.fss.or.kr/api';
+  const TEST_CORP = '00126380'; // 연결 테스트용: 삼성전자 고유번호
+
+  // {url} 자리에 인코딩된 DART 주소가 들어간다. 프록시 작동 여부는 수시로 바뀌므로 "연결 테스트"로 확인한다.
+  const PROXIES = [
+    { id: 'worker', label: '내 Cloudflare Worker (추천)', tpl: '' },
+    { id: 'corsproxy', label: 'corsproxy.io (공용 · 가입 필요할 수 있음)', tpl: 'https://corsproxy.io/?url={url}' },
+    { id: 'allorigins', label: 'allorigins.win (공용 · 불안정)', tpl: 'https://api.allorigins.win/raw?url={url}' },
+    { id: 'codetabs', label: 'codetabs.com (공용 · 불안정)', tpl: 'https://api.codetabs.com/v1/proxy?quest={url}' },
+    { id: 'direct', label: '프록시 없이 직접 (DART가 CORS로 차단)', tpl: '{url}' },
+    { id: 'custom', label: '직접 입력', tpl: '' }
+  ];
+  const labelOf = (id) => (PROXIES.find((p) => p.id === id) || {}).label || id;
+
+  const DART_STATUS = {
+    '000': '정상', '010': '등록되지 않은 API 키입니다.', '011': '사용할 수 없는 API 키입니다.',
+    '012': '접근할 수 없는 IP입니다.', '013': '조회된 데이터가 없습니다.', '020': '일일 요청 한도를 초과했습니다.',
+    '100': '요청 값이 올바르지 않습니다.', '800': 'DART 시스템 점검 중입니다.', '900': 'DART에서 정의되지 않은 오류가 발생했습니다.'
+  };
+  const CORP_CLS = { Y: '유가증권시장', K: '코스닥', N: '코넥스', E: '기타(비상장)' };
+
+  /* ---------- 설정 저장 (localStorage, 실패해도 동작) ---------- */
+  const store = {
+    get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* 무시 */ } },
+    del: (k) => { try { localStorage.removeItem(k); } catch { /* 무시 */ } }
+  };
+  const cfg = {
+    key: store.get('dart.key') || '',
+    remember: !!store.get('dart.key'),
+    proxy: store.get('dart.proxy') || 'worker',
+    custom: store.get('dart.customProxy') || '',
+    worker: store.get('dart.worker') || ''
+  };
+
+  /* ---------- 기업 목록 캐시 (IndexedDB: 목록이 커서 localStorage 한도를 넘는다) ---------- */
+  const idb = {
+    open() {
+      return new Promise((resolve, reject) => {
+        const r = indexedDB.open('portfolio-dart', 1);
+        r.onupgradeneeded = () => r.result.createObjectStore('kv');
+        r.onsuccess = () => resolve(r.result);
+        r.onerror = () => reject(r.error);
+      });
+    },
+    async get(k) {
+      const db = await this.open();
+      return new Promise((res, rej) => {
+        const q = db.transaction('kv').objectStore('kv').get(k);
+        q.onsuccess = () => res(q.result);
+        q.onerror = () => rej(q.error);
+      });
+    },
+    async set(k, v) {
+      const db = await this.open();
+      return new Promise((res, rej) => {
+        const t = db.transaction('kv', 'readwrite');
+        t.objectStore('kv').put(v, k);
+        t.oncomplete = res;
+        t.onerror = () => rej(t.error);
+      });
+    }
+  };
+  let corp = null; // { updatedAt, list: [{c,n,e,s}] }
+
+  /* ---------- DART 호출 ---------- */
+  const mask = (s) => (cfg.key ? String(s).split(cfg.key).join('****') : String(s));
+
+  function proxyTpl(id = cfg.proxy) {
+    if (id === 'worker') return 'WORKER:' + cfg.worker;
+    if (id === 'custom') return cfg.custom;
+    return (PROXIES.find((p) => p.id === id) || PROXIES[0]).tpl;
+  }
+
+  function buildUrl(endpoint, params, key, tpl) {
+    const u = new URL(`${DART}/${endpoint}`);
+    u.search = new URLSearchParams({ crtfc_key: key, ...params });
+    // 내 Worker: https://xxx.workers.dev/api/company.json?... 형태로 경로를 그대로 넘긴다
+    if (tpl.startsWith('WORKER:')) {
+      let base = tpl.slice(7).trim().replace(/\/+$/, '');
+      if (!base) throw new Error('Worker 주소를 입력하세요. 아래 "Worker 만드는 법"을 참고하세요.');
+      if (!/^https?:\/\//i.test(base)) base = 'https://' + base; // https:// 생략 시 자동 보완
+      if (!/^https:\/\/[^\s/]+\.[^\s/]+/i.test(base)) throw new Error('Worker 주소 형식이 올바르지 않습니다. 예: https://dart-proxy.내아이디.workers.dev');
+      return `${base}/api/${endpoint}${u.search}`;
+    }
+    if (!tpl || !tpl.includes('{url}')) throw new Error('프록시 주소에 {url} 자리가 필요합니다. 예: https://프록시주소/?url={url}');
+    return tpl === '{url}' ? u.toString() : tpl.replace('{url}', encodeURIComponent(u.toString()));
+  }
+
+  async function dartFetch(endpoint, params, { key = cfg.key, tpl = proxyTpl() } = {}) {
+    if (!key) throw new Error('API 키를 먼저 입력하세요.');
+    const isWorker = tpl.startsWith('WORKER:');
+    const target = buildUrl(endpoint, params, key, tpl);
+    let res;
+    try {
+      res = await fetch(target, { signal: AbortSignal.timeout(30000) });
+    } catch (e) {
+      if (e.name === 'TimeoutError') throw new Error('응답 시간이 초과됐습니다.');
+      throw new Error(isWorker
+        ? 'Worker에 연결하지 못했습니다. 주소가 맞는지, 코드를 붙여넣고 Deploy 했는지 확인하세요.'
+        : tpl === '{url}' ? 'DART가 브라우저 직접 호출을 차단합니다 (CORS).' : '연결 실패 (프록시 중단 또는 차단).');
+    }
+    if (!res.ok) {
+      if (isWorker) throw new Error(`Worker 응답 오류 (HTTP ${res.status}). ${res.status === 404 ? 'Worker 코드가 기본 Hello World 그대로인지 확인하세요.' : 'Worker 코드를 다시 붙여넣고 Deploy 하세요.'}`);
+      if (res.status === 401 || res.status === 403) throw new Error(`이 공용 프록시는 현재 가입/인증이 필요합니다 (HTTP ${res.status}).`);
+      throw new Error(`프록시 응답 오류 (HTTP ${res.status}).`);
+    }
+    return res;
+  }
+
+  async function getCompany(corpCode, opts) {
+    const res = await dartFetch('company.json', { corp_code: corpCode }, opts);
+    let j;
+    try { j = await res.json(); } catch { throw new Error('응답을 해석하지 못했습니다. 프록시가 DART 응답을 바꿨을 수 있습니다.'); }
+    if (j.status !== '000') throw new Error(DART_STATUS[j.status] || j.message || '알 수 없는 오류');
+    return j;
+  }
+
+  // ZIP에서 첫 번째 파일 꺼내기: 중앙 디렉터리 → 로컬 헤더 → deflate 해제(DecompressionStream)
+  async function unzipFirst(buf) {
+    const b = new Uint8Array(buf);
+    const v = new DataView(buf);
+    let eocd = -1;
+    for (let i = b.length - 22; i >= 0; i--) if (v.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    if (eocd < 0) throw new Error('ZIP 형식이 아닙니다.');
+    const cd = v.getUint32(eocd + 16, true);
+    const method = v.getUint16(cd + 10, true);
+    const size = v.getUint32(cd + 20, true);
+    const local = v.getUint32(cd + 42, true);
+    const start = local + 30 + v.getUint16(local + 26, true) + v.getUint16(local + 28, true);
+    const data = b.subarray(start, start + size);
+    if (method === 0) return new TextDecoder().decode(data);
+    if (method !== 8) throw new Error(`지원하지 않는 압축 방식: ${method}`);
+    const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return new Response(stream).text();
+  }
+
+  async function downloadCorpList() {
+    const res = await dartFetch('corpCode.xml', {});
+    const buf = await res.arrayBuffer();
+    const head = new Uint8Array(buf, 0, 2);
+    if (!(head[0] === 0x50 && head[1] === 0x4b)) { // 'PK'가 아니면 오류 XML/JSON
+      const text = new TextDecoder().decode(buf);
+      const st = (text.match(/<status>(\d+)<\/status>/) || text.match(/"status"\s*:\s*"(\d+)"/) || [])[1];
+      throw new Error(DART_STATUS[st] || '기업 목록 파일을 받지 못했습니다. 프록시가 파일 전송을 지원하지 않을 수 있습니다.');
+    }
+    const xml = await unzipFirst(buf);
+    const tag = (s, n) => ((s.match(new RegExp(`<${n}>([\\s\\S]*?)</${n}>`)) || [])[1] || '').trim();
+    const list = [];
+    for (const m of xml.matchAll(/<list>([\s\S]*?)<\/list>/g))
+      list.push({ c: tag(m[1], 'corp_code'), n: tag(m[1], 'corp_name'), e: tag(m[1], 'corp_eng_name'), s: tag(m[1], 'stock_code') });
+    if (!list.length) throw new Error('기업 목록이 비어 있습니다.');
+    corp = { updatedAt: new Date().toISOString(), list };
+    try { await idb.set('corp', corp); } catch { /* 저장 실패 시 이번 방문 동안만 사용 */ }
+    return corp;
+  }
+
+  function search(q) {
+    const norm = (s) => s.toLowerCase().replace(/\s+/g, '');
+    const query = norm(q);
+    const out = [];
+    for (const it of corp.list) {
+      const n = norm(it.n), e = norm(it.e);
+      let sc = -1;
+      if (n === query || e === query || it.s === query || it.c === query) sc = 0;
+      else if (n.startsWith(query)) sc = 1;
+      else if (n.includes(query) || e.includes(query)) sc = 2;
+      if (sc >= 0) out.push({ sc: sc * 2 + (it.s ? 0 : 1), it }); // 같은 점수면 상장사 먼저
+    }
+    out.sort((a, b) => a.sc - b.sc || a.it.n.length - b.it.n.length);
+    return out.slice(0, 30).map((x) => x.it);
+  }
+
+  /* ---------- 화면 ---------- */
+  const fmtDate = (d) => (/^\d{8}$/.test(d || '') ? `${d.slice(0, 4)}.${d.slice(4, 6)}.${d.slice(6)}` : d || '');
+  const fmtIso = (s) => (s ? new Date(s).toLocaleString('ko-KR') : '');
+  const toUrl = (u) => {
+    const s = (u || '').trim();
+    if (!s) return '';
+    const full = /^https?:\/\//i.test(s) ? s : `http://${s}`;
+    return /^https?:\/\/[^\s"'<>]+$/i.test(full) ? full : '';
+  };
+  const setMsg = (el, text, isError = false) => { el.textContent = mask(text); el.classList.toggle('is-error', isError); };
+
+  function renderSettings() {
+    $('#dart-key').value = cfg.key;
+    $('#dart-remember').checked = cfg.remember;
+    $('#dart-proxy').innerHTML = PROXIES.map((p) => `<option value="${p.id}"${p.id === cfg.proxy ? ' selected' : ''}>${esc(p.label)}</option>`).join('');
+    $('#dart-custom').value = cfg.custom;
+    $('#dart-worker').value = cfg.worker;
+    syncProxyRows();
+    renderCorp();
+  }
+
+  function renderCorp(extra = '') {
+    $('#corp-view').innerHTML = `
+      <span>기업 고유번호 목록: ${corp ? `${corp.list.length.toLocaleString()}개 · ${esc(fmtIso(corp.updatedAt))} 기준` : '없음 (첫 검색 때 자동으로 받습니다)'}</span>
+      <button class="btn" type="button" id="corp-refresh">목록 새로 받기</button>
+      ${extra ? `<span class="co-msg" style="margin:0">${esc(mask(extra))}</span>` : ''}`;
+  }
+
+  // .env 불러오기 → DART 키·Worker 주소 채우기 ("키 기억하기"를 켜 두면 이 브라우저에 저장)
+  window.addEventListener('env:loaded', (e) => {
+    const v = e.detail || {};
+    if (v.DART_API_KEY) $('#dart-key').value = v.DART_API_KEY;
+    if (v.DART_WORKER_URL) { $('#dart-worker').value = v.DART_WORKER_URL; $('#dart-proxy').value = 'worker'; }
+    if (v.DART_API_KEY || v.DART_WORKER_URL) { saveSettings(); syncProxyRows(); }
+  });
+
+  function syncProxyRows() {
+    $('#dart-custom-row').hidden = cfg.proxy !== 'custom';
+    $('#dart-worker-row').hidden = cfg.proxy !== 'worker';
+    $('#dart-worker-help').open = cfg.proxy === 'worker' && !cfg.worker;
+  }
+
+  function saveSettings() {
+    cfg.key = $('#dart-key').value.trim();
+    cfg.remember = $('#dart-remember').checked;
+    cfg.proxy = $('#dart-proxy').value;
+    cfg.custom = $('#dart-custom').value.trim();
+    cfg.worker = $('#dart-worker').value.trim();
+    if (cfg.remember && cfg.key) store.set('dart.key', cfg.key); else store.del('dart.key');
+    store.set('dart.proxy', cfg.proxy);
+    store.set('dart.customProxy', cfg.custom);
+    store.set('dart.worker', cfg.worker);
+    $('#dart-custom-row').hidden = cfg.proxy !== 'custom';
+    $('#dart-worker-row').hidden = cfg.proxy !== 'worker';
+  }
+
+  async function runTest(btn) {
+    saveSettings();
+    const msg = $('#dart-msg');
+    if (!/^[A-Za-z0-9]{40}$/.test(cfg.key)) return setMsg(msg, 'API 키는 영문·숫자 40자리입니다.', true);
+    // 내 Worker가 있으면 Worker만 시도한다 (키를 남의 서버로 보내지 않기 위해).
+    // Worker가 없을 때만 선택한 것 → 공용 프록시 순서로 시도한다.
+    let order;
+    if (cfg.worker) order = ['worker'];
+    else order = [cfg.proxy, ...PROXIES.map((p) => p.id)]
+      .filter((id, i, arr) => arr.indexOf(id) === i)
+      .filter((id) => id !== 'worker' && (id !== 'custom' || cfg.custom));
+    if (cfg.proxy === 'custom' && cfg.custom) order = ['custom'];
+    btn.disabled = true;
+    const tried = [];
+    try {
+      for (const id of order) {
+        const label = labelOf(id);
+        setMsg(msg, `${label} 로 테스트 중…`);
+        try {
+          await getCompany(TEST_CORP, { tpl: proxyTpl(id) });
+          cfg.proxy = id;
+          store.set('dart.proxy', id);
+          $('#dart-proxy').value = id;
+          syncProxyRows();
+          return setMsg(msg, `연결 성공: ${label} 사용. API 키도 유효합니다.`);
+        } catch (e) {
+          // 키 자체가 틀린 경우는 프록시를 바꿔도 소용없으므로 바로 중단
+          if (/API 키|IP|한도/.test(e.message)) return setMsg(msg, e.message, true);
+          tried.push(`${label}: ${e.message}`);
+        }
+      }
+      setMsg(msg, `연결 실패 — ${tried.join(' / ')}${cfg.worker ? '' : '  →  공용 프록시는 막히는 경우가 많습니다. 아래 안내대로 내 Worker를 만들어 주소를 넣어 주세요.'}`, true);
+      if (!cfg.worker) { cfg.proxy = 'worker'; $('#dart-proxy').value = 'worker'; syncProxyRows(); $('#dart-worker-help').open = true; }
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  let results = [];
+  async function doSearch(btn) {
+    saveSettings();
+    const msg = $('#search-msg');
+    const q = $('#q').value.trim();
+    if (!q) return setMsg(msg, '회사명을 입력하세요.', true);
+    btn.disabled = true;
+    try {
+      if (!corp) {
+        setMsg(msg, '처음 검색이라 DART에서 전체 기업 목록(수 MB)을 받는 중입니다…');
+        await downloadCorpList();
+        renderCorp();
+      }
+      results = search(q);
+      setMsg(msg, results.length ? `${results.length}건${results.length === 30 ? ' (상위 30건만 표시)' : ''}` : '검색 결과가 없습니다. DART에 공시 의무가 있는 기업만 조회됩니다.');
+      $('#results').innerHTML = results.map((r, i) => `
+        <li><button type="button" data-idx="${i}">
+          <span>${esc(r.n)}<small>${esc(r.e)}</small></span>
+          ${r.s ? `<span class="badge badge-soft">상장 ${esc(r.s)}</span>` : '<span class="badge badge-pending">비상장</span>'}
+        </button></li>`).join('');
+    } catch (e) {
+      setMsg(msg, e.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  let lastCompany = null; // 자기소개서 페이지로 넘길 마지막 조회 결과
+  async function showCompany(code) {
+    const box = $('#company');
+    box.innerHTML = '<div class="co-card"><p class="co-msg">기업개황을 불러오는 중…</p></div>';
+    try {
+      const c = await getCompany(code);
+      const hm = toUrl(c.hm_url), ir = toUrl(c.ir_url);
+      const stock = (c.stock_code || '').trim();
+      const cls = CORP_CLS[c.corp_cls] || c.corp_cls;
+      const rows = [
+        ['대표자', esc(c.ceo_nm)],
+        ['법인 구분', esc(cls)],
+        ['종목', stock ? `${esc(c.stock_name)} (${esc(stock)})` : '비상장'],
+        ['설립일', esc(fmtDate(c.est_dt))],
+        ['결산월', c.acc_mt ? `${esc(Number(c.acc_mt))}월` : ''],
+        ['업종코드', c.induty_code ? `${esc(c.induty_code)} <span class="muted">(한국표준산업분류)</span>` : ''],
+        ['주소', esc(c.adres)],
+        ['홈페이지', hm ? `<a href="${esc(hm)}" target="_blank" rel="noopener">${esc(c.hm_url)}</a>` : ''],
+        ['IR 페이지', ir ? `<a href="${esc(ir)}" target="_blank" rel="noopener">${esc(c.ir_url)}</a>` : ''],
+        ['대표 전화', esc(c.phn_no)],
+        ['법인등록번호', esc(c.jurir_no)],
+        ['사업자등록번호', esc(c.bizr_no)],
+        ['DART 고유번호', esc(code)]
+      ];
+      box.innerHTML = `
+        <article class="co-card">
+          <div class="co-head">
+            <div><h2>${esc(c.corp_name)}</h2><p>${esc(c.corp_name_eng)}</p></div>
+            <span class="badge ${stock ? 'badge-soft' : 'badge-pending'}">${esc(cls)}</span>
+          </div>
+          <dl class="co-dl">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v || '<span class="muted">—</span>'}</dd>`).join('')}</dl>
+          <p class="co-source">출처: 금융감독원 OpenDART 기업개황 API · 조회 ${esc(fmtIso(new Date().toISOString()))}<br>
+            공시 기준 정보이므로 채용 조건·직무 정보는 포함되지 않습니다. 채용 정보는 기업 공식 채용 페이지에서 따로 확인하세요.</p>
+          ${meta.extraMenu ? '<div class="co-row" style="margin-top:14px"><button class="btn btn-primary" type="button" id="co-to-cl">이 기업으로 자기소개서 쓰기 →</button></div>' : ''}
+        </article>`;
+      lastCompany = {
+        corp_code: code, name: c.corp_name || '', eng: c.corp_name_eng || '', ceo: c.ceo_nm || '', cls: cls || '',
+        stock: stock, est: fmtDate(c.est_dt), induty: c.induty_code || '', addr: c.adres || '',
+        homepage: c.hm_url || '', ir: c.ir_url || '', fetchedAt: new Date().toISOString().slice(0, 10)
+      };
+    } catch (e) {
+      box.innerHTML = `<div class="co-card"><p class="co-msg is-error">${esc(mask(e.message))}</p></div>`;
+    }
+  }
+
+  /* ---------- 이벤트 ---------- */
+  section.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type=submit]');
+    if (e.target.id === 'dart-form') runTest(btn);
+    if (e.target.id === 'search-form') doSearch(btn);
+  });
+  section.addEventListener('change', (e) => {
+    if (['dart-proxy', 'dart-remember', 'dart-custom', 'dart-key', 'dart-worker'].includes(e.target.id)) {
+      saveSettings();
+      if (e.target.id === 'dart-proxy') syncProxyRows();
+    }
+  });
+  // 자기소개서 페이지로 기업 정보 넘기기
+  section.addEventListener('click', (e) => {
+    if (!e.target.closest('#co-to-cl') || !lastCompany) return;
+    window.dispatchEvent(new CustomEvent('cl:pick', { detail: { ...lastCompany } }));
+    location.hash = '#/extra';
+  });
+  // 다른 페이지(자기소개서)에서 DART를 부를 수 있게 공개
+  window.App = window.App || {};
+  window.App.dart = { dartFetch: (endpoint, params) => dartFetch(endpoint, params) };
+
+  section.addEventListener('click', async (e) => {
+    const t = e.target;
+    if (t.id === 'dart-toggle') {
+      const input = $('#dart-key');
+      input.type = input.type === 'password' ? 'text' : 'password';
+      t.textContent = input.type === 'password' ? '보기' : '숨기기';
+    }
+    if (t.id === 'worker-copy') {
+      const code = $('#worker-code').textContent;
+      try {
+        await navigator.clipboard.writeText(code);
+        t.textContent = '복사됨';
+      } catch {
+        getSelection().selectAllChildren($('#worker-code')); // 클립보드 권한이 없으면 선택만 해 둔다
+        t.textContent = 'Ctrl+C로 복사하세요';
+      }
+      setTimeout(() => (t.textContent = '코드 복사'), 2000);
+    }
+    if (t.id === 'dart-forget') {
+      cfg.key = ''; cfg.remember = false;
+      store.del('dart.key');
+      renderSettings();
+      setMsg($('#dart-msg'), '이 브라우저에 저장된 키를 삭제했습니다.');
+    }
+    if (t.id === 'corp-refresh') {
+      saveSettings();
+      t.disabled = true;
+      renderCorp('받는 중…');
+      try { await downloadCorpList(); renderCorp('갱신 완료'); } catch (err) { renderCorp(err.message); }
+    }
+    const item = t.closest('[data-idx]');
+    if (item) {
+      section.querySelectorAll('#results button').forEach((b) => b.removeAttribute('aria-current'));
+      item.setAttribute('aria-current', 'true');
+      saveSettings();
+      showCompany(results[item.dataset.idx].c);
+    }
+  });
+
+  // 해시 라우팅: #/company 이면 기업분석 페이지로 전환
+  function syncView() {
+    const on = location.hash === '#/company';
+    const was = document.body.classList.contains('view-company');
+    document.body.classList.toggle('view-company', on);
+    if (on && !was) window.scrollTo(0, 0);
+    if (on) document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('active', a.dataset.nav === 'company-tool'));
+  }
+  window.addEventListener('hashchange', syncView);
+  syncView();
+
+  renderSettings();
+  idb.get('corp').then((v) => { if (v && v.list) { corp = v; renderCorp(); } }).catch(() => {});
+})();
+
+  </script>
+  <!-- ===== 진로탐색 스크립트 ===== -->
+  <script>
+(function () {
+  const D = window.PORTFOLIO_DATA || {};
+  const meta = (D.profile && D.profile.meta) || {};
+  const section = document.getElementById('career-page');
+  if (meta.careerPage === false) return; // 공개 배포 시 profile.meta.careerPage = false 로 숨김
+  section.hidden = false;
+
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const safeUrl = (u) => (/^https?:\/\//i.test(u || '') ? u : '');
+  const arr = (v) => (Array.isArray(v) ? v : []);
+  const c = D.career || {};
+
+  const TONE = { '준비중': 'ok', '유력': 'ok', '합격': 'ok', '지원완료': 'soft', '지원예정': 'soft', '결과대기': 'soft', '관심': 'pending', '탐색중': 'pending', '보류': 'warn', '제외': 'warn', '불합격': 'warn' };
+  const badge = (t) => (t ? `<span class="badge badge-${TONE[t] || 'pending'}">${esc(t)}</span>` : '');
+  const empty = (msg) => `<p class="cr-empty">${esc(msg)}</p>`;
+  const card = (title, body, extra = '') => `<div class="cr-card">${title ? `<h3>${title}</h3>` : ''}${body}${extra}</div>`;
+  const bullets = (a) => (arr(a).length ? `<ul style="margin:6px 0 0;padding-left:18px;font-size:14px">${arr(a).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '');
+
+  function goal() {
+    return card('진로 목표', c.goal ? `<p class="cr-goal">${esc(c.goal)}</p>` : empty('아직 정하지 않음 — career.goal 에 한 문장으로 적어 주세요.'));
+  }
+
+  function tracks() {
+    const list = arr(c.tracks);
+    if (!list.length) return card('지원 방향', empty('아직 없음'));
+    return `<div class="cr-grid">${list.map((t) => card(
+      `<span class="muted" style="font-size:13px">Track ${esc(t.id)}</span> ${esc(t.name)} ${badge(t.status)}`,
+      `${t.focus ? `<p class="cr-help" style="margin-bottom:10px">${esc(t.focus)}</p>` : ''}
+       <h4>지원 대상</h4>
+       ${arr(t.targets).length ? `<ul class="cr-items">${arr(t.targets).map((g) => {
+          const u = safeUrl(g.url);
+          return `<li><strong>${esc(g.name)}</strong> ${badge(g.status)}${g.role ? `<p class="cr-sub">${esc(g.role)}</p>` : ''}${u ? `<p><a href="${esc(u)}" target="_blank" rel="noopener">공고 보기</a></p>` : ''}</li>`;
+        }).join('')}</ul>` : empty('아직 없음')}
+       ${arr(t.notes).length ? `<h4 style="margin-top:12px">메모</h4>${bullets(t.notes)}` : ''}`
+    )).join('')}</div>`;
+  }
+
+  function jobs() {
+    const list = arr(c.jobs);
+    const anySample = list.some((j) => j.sample);
+    return card('관심 직무 후보' + (anySample ? ' <span class="badge badge-warn">예시 포함</span>' : ''), list.length
+      ? `${anySample ? '<p class="cr-sample">⚠ "예시" 표시가 붙은 후보는 임의로 만든 것입니다. 근거 칸은 실제 이력서·자기소개서 내용이지만, 후보로 둘지는 직접 판단해 주세요.</p>' : ''}<ul class="cr-items">${list.map((j) => `<li>
+          <strong>${esc(j.name)}</strong> ${badge(j.status)} ${j.sample ? '<span class="badge badge-warn">예시</span>' : ''}
+          ${j.why ? `<p>${esc(j.why)}</p>` : ''}
+          ${arr(j.evidence).length ? `<p class="cr-sub" style="margin-top:8px">가진 근거</p>${bullets(j.evidence)}` : ''}
+          ${arr(j.gap).length ? `<p class="cr-sub" style="margin-top:8px">부족한 점</p>${bullets(j.gap)}` : ''}
+        </li>`).join('')}</ul>`
+      : empty('아직 없음 — 웹 개발, 백엔드, IT/전산, 데이터, IT 서비스 운영 등에서 2~3개를 골라 career.jobs 에 적어 주세요.'));
+  }
+
+  const RIASEC = [
+    ['R', '현실형', '도구·기계·사물을 직접 다루는 활동'],
+    ['I', '탐구형', '분석하고 원리를 탐구하는 활동'],
+    ['A', '예술형', '창의적으로 표현하는 활동'],
+    ['S', '사회형', '사람을 돕고 가르치는 활동'],
+    ['E', '진취형', '사람을 이끌고 설득하는 활동'],
+    ['C', '관습형', '정해진 규칙에 따라 자료를 정리하는 활동']
+  ];
+  function riasec() {
+    const r = c.riasec;
+    if (!r || !r.scores) return card('홀랜드 RIASEC 흥미 유형', empty('아직 없음 — 검사 결과를 career.riasec 에 입력해 주세요.'));
+    const sc = RIASEC.map(([k]) => ({ k, v: Number(r.scores[k]) || 0 }));
+    const top = sc.slice().sort((a, b) => b.v - a.v).slice(0, 3).map((x) => x.k);
+    const html = card('홀랜드 RIASEC 흥미 유형 ' + (r.sample ? '<span class="badge badge-warn">예시</span>' : ''),
+      `${r.sample ? '<p class="cr-sample">⚠ 임의로 만든 예시 데이터입니다. 실제 검사 결과가 아니므로 진로 판단이나 지원서에 쓰지 마세요.</p>' : ''}
+       <p class="cr-sub">상위 3개 유형 코드</p>
+       <p class="cr-code">${esc(top.join(''))}</p>
+       <ul class="rs-list" aria-label="유형별 점수 (0~100)">${RIASEC.map(([k, name, desc]) => {
+         const v = Math.max(0, Math.min(100, Number(r.scores[k]) || 0));
+         return `<li class="rs-row${top.includes(k) ? ' is-top' : ''}" title="${esc(`${k} ${name}: ${v}점`)}">
+           <span class="rs-name"><b>${k}</b> ${name}</span>
+           <span class="rs-track"><span class="rs-bar" style="width:${v}%"></span></span>
+           <span class="rs-val">${v}</span>
+           <span class="rs-desc">${desc}</span></li>`;
+       }).join('')}</ul>
+       <p class="cr-help" style="margin-top:14px">출처: ${esc(r.source || '출처 없음')}${r.date ? ` · ${esc(r.date)}` : ''}</p>
+       ${r.note ? `<p class="cr-help" style="margin-top:4px">${esc(r.note)}</p>` : ''}`);
+    // 육각형 레이더 차트를 카드 맨 위(제목 위)에 넣는다
+    return html.replace('<div class="cr-card">', `<div class="cr-card">${radar(r, top)}`);
+  }
+
+  // 홀랜드 육각형 레이더 차트 (SVG). 축 순서는 R-I-A-S-E-C (홀랜드 육각형 순서)
+  function radar(r, top) {
+    const W = 400, H = 350, cx = W / 2, cy = H / 2 + 4, R = 125;
+    const pt = (i, v) => {
+      const a = -Math.PI / 2 + (i * Math.PI) / 3; // R 이 맨 위, 시계 방향
+      return [cx + Math.cos(a) * R * (v / 100), cy + Math.sin(a) * R * (v / 100)];
+    };
+    const poly = (v) => RIASEC.map((_, i) => pt(i, v).map((n) => n.toFixed(1)).join(',')).join(' ');
+    const vals = RIASEC.map(([k]) => Math.max(0, Math.min(100, Number(r.scores[k]) || 0)));
+    const rings = [20, 40, 60, 80, 100].map((v) => `<polygon points="${poly(v)}" class="rd-grid"/>`).join('');
+    const spokes = RIASEC.map((_, i) => { const [x, y] = pt(i, 100); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="rd-grid"/>`; }).join('');
+    // 눈금 숫자는 R·I 축 사이(변의 가운데)에 둬서 데이터 점과 겹치지 않게 한다
+    const ticks = [20, 40, 60, 80, 100].map((v) => {
+      const d = R * (v / 100) * Math.cos(Math.PI / 6), a = -Math.PI / 3;
+      return `<text x="${(cx + Math.cos(a) * d).toFixed(1)}" y="${(cy + Math.sin(a) * d + 3).toFixed(1)}" text-anchor="middle" class="rd-tick">${v}</text>`;
+    }).join('');
+    const shape = RIASEC.map((_, i) => pt(i, vals[i]).map((n) => n.toFixed(1)).join(',')).join(' ');
+    const dots = RIASEC.map(([k, name], i) => {
+      const [x, y] = pt(i, vals[i]);
+      return `<g class="rd-hit"><title>${k} ${name}: ${vals[i]}점</title><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12" fill="transparent"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" class="rd-dot"/></g>`;
+    }).join('');
+    const labels = RIASEC.map(([k, name], i) => {
+      const [x, y] = pt(i, 120);
+      const anchor = Math.abs(x - cx) < 4 ? 'middle' : x > cx ? 'start' : 'end';
+      const dy = y < cy - 60 ? -4 : y > cy + 60 ? 12 : 4;
+      return `<text x="${x.toFixed(1)}" y="${(y + dy).toFixed(1)}" text-anchor="${anchor}" class="rd-label${top.includes(k) ? ' is-top' : ''}">${k} ${name} <tspan class="rd-val">${vals[i]}</tspan></text>`;
+    }).join('');
+    return `<figure class="rd-fig">
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="홀랜드 RIASEC 육각형 차트${r.sample ? ' (임의 생성 예시)' : ''}: ${RIASEC.map(([k, n], i) => `${n} ${vals[i]}`).join(', ')}">
+        ${rings}${spokes}${ticks}
+        <polygon points="${shape}" class="rd-shape"/>
+        ${dots}${labels}
+      </svg>
+      ${r.sample ? '<figcaption class="cr-help">예시 점수로 그린 차트입니다 (실제 검사 결과 아님)</figcaption>' : ''}
+    </figure>`;
+  }
+
+  function selfList(title, list, emptyMsg) {
+    return card(title, arr(list).length
+      ? `<ul class="cr-items">${arr(list).map((x) => `<li>${esc(x.text)}
+          <p class="cr-sub">${esc(x.source || '출처 없음')} · ${x.verified ? '<span class="badge badge-ok">근거 있음</span>' : '<span class="badge badge-pending">자기 평가</span>'}</p></li>`).join('')}</ul>`
+      : empty(emptyMsg));
+  }
+
+  function log() {
+    const list = arr(c.log).slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+    return card('탐색 기록', list.length
+      ? `<ol class="timeline">${list.map((l) => `<li><div class="tl-period">${esc(l.date)}</div><div class="tl-body"><h4>${esc(l.title)}</h4>${l.note ? `<p>${esc(l.note)}</p>` : ''}</div></li>`).join('')}</ol>`
+      : empty('아직 없음'));
+  }
+
+  function actions() {
+    const list = arr(c.nextActions);
+    return card('지금 할 일', list.length
+      ? `<ul class="cr-items">${list.map((a, i) => `<li>
+          <strong>${a.checked ? '✓ ' : `${i + 1}. `}${esc(a.title)}</strong> ${a.checked ? '<span class="badge badge-ok">완료</span>' : ''}
+          ${a.why ? `<p><span class="cr-sub">왜</span> ${esc(a.why)}</p>` : ''}
+          ${a.done ? `<p><span class="cr-sub">완료 기준</span> ${esc(a.done)}</p>` : ''}
+          ${a.effort ? `<p><span class="cr-sub">예상 작업량</span> ${esc(a.effort)}</p>` : ''}
+        </li>`).join('')}</ul>`
+      : empty('아직 없음'));
+  }
+
+  document.getElementById('career-meta').textContent =
+    `지원 방향, 관심 직무, 자기 분석, 탐색 기록을 정리하는 곳입니다. 내용은 파일 안 career 데이터에서 수정합니다.${c.updated ? ` · 마지막 수정 ${c.updated}` : ''}`;
+  document.getElementById('career-body').innerHTML = [
+    `<div class="cr-grid">${goal()}${actions()}</div>`,
+    `<div class="cr-grid">${riasec()}${jobs()}</div>`,
+    tracks(),
+    `<div class="cr-grid">${selfList('관심사', c.interests, '아직 없음')}${selfList('강점', c.strengths, '아직 없음')}${selfList('약점', c.weaknesses, '아직 없음')}</div>`,
+    log()
+  ].join('');
+
+  // 해시 라우팅: #/career 이면 진로탐색 페이지로 전환
+  function syncCareer() {
+    const on = location.hash === '#/career';
+    const was = document.body.classList.contains('view-career');
+    document.body.classList.toggle('view-career', on);
+    if (on && !was) window.scrollTo(0, 0);
+    if (on) document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('active', a.dataset.nav === 'career-page'));
+  }
+  window.addEventListener('hashchange', syncCareer);
+  syncCareer();
+})();
+  </script>
+  <!-- ===== 자기소개서 작성 페이지 스크립트 (#/extra) ===== -->
+  <script>
+// 흐름: 기업분석(DART)에서 기업 선택 → 이 페이지로 기업 정보 전달 → 문항별로 직접 작성
+// 작성: 사용자가 문항별 키워드·추가 내용을 넣으면 Gemini가 초안을 쓴다 (기업 정보 + 포트폴리오 근거만 사용하도록 지시).
+// 검사: 글자 수, 다른 회사명, 추상어, [확인 필요] 등 흔한 실수를 표시한다. 최종 확인은 사용자가 한다.
+// 초안은 이 브라우저(localStorage)에만 저장된다. 다른 PC·브라우저로 옮기려면 .txt 저장을 쓴다.
+(function () {
+  const D = window.PORTFOLIO_DATA || {};
+  const meta = (D.profile && D.profile.meta) || {};
+  if (!meta.extraMenu) return; // extraMenu 가 비어 있으면 메뉴와 페이지를 숨긴다
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const safeUrl = (u) => {
+    const s = String(u || '').trim();
+    if (!s) return '';
+    const full = /^https?:\/\//i.test(s) ? s : `http://${s}`;
+    return /^https?:\/\/[^\s"'<>]+$/i.test(full) ? full : '';
+  };
+  const section = $('#extra-page');
+  section.hidden = false;
+  $('#extra-title').innerHTML = `${esc(meta.extraMenu)} <span class="badge badge-warn">개인용</span>`;
+
+  /* ---------- 저장 (이 브라우저에만) ---------- */
+  const KEY = 'coverLetter.drafts.v1';
+  const store = {
+    load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } },
+    save(all) { try { localStorage.setItem(KEY, JSON.stringify(all)); return true; } catch { return false; } },
+    getCur() { try { return localStorage.getItem(KEY + '.current'); } catch { return null; } },
+    setCur(id) { try { localStorage.setItem(KEY + '.current', id || ''); } catch { /* 무시 */ } }
+  };
+  let drafts = store.load();                 // { [draftId]: draft }
+  let current = null;                        // 지금 편집 중인 draft
+  let saveTimer = null;
+
+  const DEFAULT_QUESTIONS = [
+    { title: '지원동기', limit: 500, kind: 'motive', text: '' },
+    { title: '직무 관련 역량과 경험', limit: 700, kind: 'skill', text: '' },
+    { title: '문제를 해결한 경험', limit: 700, kind: 'problem', text: '' },
+    { title: '입사 후 포부', limit: 500, kind: 'plan', text: '' }
+  ];
+  const GUIDE = {
+    motive: ['이 회사를 고른 이유를 기업 정보(업종, 사업 내용, 인재상)와 연결해서 쓰기', '다른 회사에 그대로 낼 수 있는 문장이면 다시 쓰기', '회사명을 정확히 쓰기'],
+    skill: ['지원 직무에 필요한 역량 1~2개만 고르기', '역량마다 실제 경험 → 내가 한 행동 → 결과 순서로', '사용한 기술은 실제로 써 본 것만'],
+    problem: ['문제 → 원인 분석 → 행동 → 기술적 판단 → 결과 → 배운 점', '"끈기가 있다" 대신 무엇을 몇 번 시도했는지', '수치는 실제로 잰 것만'],
+    plan: ['입사 후 1년 안에 할 수 있는 구체적인 일', '회사 사업과 연결된 목표', '지금 부족한 점을 어떻게 채울지'],
+    custom: ['문항이 묻는 것에 첫 문장으로 답하기', '경험 → 행동 → 결과 순서로']
+  };
+
+  const uid = () => 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const today = () => new Date().toISOString().slice(0, 10);
+  const blankCompany = () => ({ name: '', corp_code: '', eng: '', ceo: '', cls: '', stock: '', est: '', induty: '', addr: '', homepage: '', ir: '', fetchedAt: '', business: '', talent: '', job: '', sourceNote: '', report: null });
+  function newDraft(company) {
+    const d = { id: uid(), company: { ...blankCompany(), ...(company || {}) }, role: '', questions: DEFAULT_QUESTIONS.map((q) => ({ ...q })), created: today(), updated: today() };
+    drafts[d.id] = d;
+    return d;
+  }
+  function persist(msg = '저장됨') {
+    if (!current) return;
+    current.updated = today();
+    drafts[current.id] = current;
+    const ok = store.save(drafts);
+    const el = $('#cl-save');
+    if (el) el.textContent = ok ? `${msg} · ${new Date().toLocaleTimeString('ko-KR')}` : '이 브라우저에 저장할 수 없습니다. ".txt로 저장"으로 백업하세요.';
+  }
+  const persistSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => persist('자동 저장됨'), 600); };
+
+  /* ---------- 내 근거 (포트폴리오 데이터에서 자동 수집) ---------- */
+  function pickKo(f) {
+    if (f == null) return '';
+    if (typeof f === 'string') return f;
+    if (Array.isArray(f)) return f.join(', ');
+    return f.ko || f.en || '';
+  }
+  function myEvidence() {
+    const p = D.profile || {}, out = [];
+    (p.education || []).forEach((e) => {
+      out.push({ text: `${pickKo(e.org)} ${pickKo(e.title)}${e.period ? ` (${e.period})` : ''}`, src: '학력' });
+      [].concat((e.details && (e.details.ko || e.details.en)) || []).forEach((t) => out.push({ text: t, src: '학력' }));
+    });
+    (p.experience || []).forEach((e) => {
+      const det = [].concat((e.details && (e.details.ko || e.details.en)) || []).join(', ');
+      out.push({ text: `${pickKo(e.org)} ${pickKo(e.title)}${e.period ? ` (${e.period})` : ''}${det ? ` — ${det}` : ''}`, src: '경력' });
+    });
+    (D.projects || []).filter((x) => !x.sample).forEach((x) => out.push({ text: `${pickKo(x.title)} — ${pickKo(x.summary)}`, src: '프로젝트' }));
+    (p.certificates || []).forEach((x) => out.push({ text: `${pickKo(x.name)} ${x.date || ''}`.trim(), src: '자격증' }));
+    const c = D.career || {};
+    (c.strengths || []).forEach((x) => out.push({ text: x.text, src: x.verified ? '강점' : '강점 · 자기 평가' }));
+    (c.interests || []).forEach((x) => out.push({ text: x.text, src: x.verified ? '관심사' : '관심사 · 자기 평가' }));
+    return out.filter((x) => x.text && x.text.trim());
+  }
+
+  /* ---------- 검사 ---------- */
+  const ABSTRACT = ['열정', '최선을 다', '성실', '책임감', '혁신', '누구보다', '항상', '뛰어난', '다양한 경험', '소통', '글로벌 인재', '시너지', '스펀지'];
+  const count = (t) => ({ all: t.length, noSpace: t.replace(/\s/g, '').length, bytes: new TextEncoder().encode(t).length });
+  function checks(q) {
+    const t = q.text || '', w = [];
+    const name = (current.company.name || '').trim();
+    const n = count(t);
+    if (q.limit && n.all > q.limit) w.push({ lv: 'err', msg: `글자 수 초과: ${n.all}/${q.limit}자 (공백 포함)` });
+    if (!t.trim()) return w;
+    // 다른 기업 이름이 섞였는지 (이전에 쓴 다른 초안의 회사명 기준)
+    const others = [...new Set(Object.values(drafts).map((d) => (d.company.name || '').trim()).filter((x) => x && x !== name && x.length >= 2))];
+    others.filter((o) => t.includes(o)).forEach((o) => w.push({ lv: 'err', msg: `다른 회사명 "${o}"이(가) 들어 있습니다. 다른 자기소개서에서 옮겨 온 문장인지 확인하세요.` }));
+    if (q.kind === 'motive' && name && !t.includes(name)) w.push({ lv: 'warn', msg: `지원동기에 회사명(${name})이 없습니다. 이 회사에만 해당하는 이유인지 확인하세요.` });
+    const abs = ABSTRACT.filter((a) => t.includes(a));
+    if (abs.length) w.push({ lv: 'warn', msg: `추상적인 표현: ${abs.join(', ')} → 실제 행동이나 사례로 바꿀 수 있는지 확인` });
+    const need = t.match(/\[확인 필요[^\]]*\]/g);
+    if (need) w.push({ lv: 'err', msg: `Gemini가 사실이 부족하다고 표시한 곳 ${need.length}군데: ${need.join(' ')} → 키워드에 사실을 추가하고 다시 작성하거나 직접 고치세요.` });
+    else if (/\[[^\]]*\]|○○|OO|XX/.test(t)) w.push({ lv: 'err', msg: '채우지 않은 자리표시([ ], ○○ 등)가 남아 있습니다.' });
+    if (/\d/.test(t)) w.push({ lv: 'info', msg: '숫자가 있습니다. 실제로 잰 값이고 근거를 댈 수 있는지 확인하세요.' });
+    return w;
+  }
+
+  /* ---------- 화면 ---------- */
+  const LV = { err: 'cl-w-err', warn: 'cl-w-warn', info: 'cl-w-info' };
+  function companyCard() {
+    const c = current.company;
+    const dl = [
+      ['회사명', c.name], ['영문명', c.eng], ['대표자', c.ceo], ['법인 구분', c.cls], ['종목코드', c.stock],
+      ['설립일', c.est], ['업종코드', c.induty ? `${c.induty} (한국표준산업분류)` : ''], ['주소', c.addr]
+    ].filter(([, v]) => v);
+    const hm = safeUrl(c.homepage), ir = safeUrl(c.ir);
+    const rep = c.report;
+    return `
+      <div class="co-card">
+        <h3>기업 정보</h3>
+        ${c.corp_code
+          ? `<dl class="co-dl" style="margin-top:0">${dl.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}
+               ${hm ? `<dt>홈페이지</dt><dd><a href="${esc(hm)}" target="_blank" rel="noopener">${esc(c.homepage)}</a></dd>` : ''}
+               ${ir ? `<dt>IR 페이지</dt><dd><a href="${esc(ir)}" target="_blank" rel="noopener">${esc(c.ir)}</a></dd>` : ''}</dl>
+             <p class="co-source">출처: OpenDART 기업개황 · 조회 ${esc(c.fetchedAt)} (DART 고유번호 ${esc(c.corp_code)})</p>
+             <div class="co-row" style="margin-top:10px">
+               <button class="btn" type="button" data-cl="report">최근 사업보고서 찾기</button>
+               ${rep ? `<a class="btn" href="https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${encodeURIComponent(rep.rcept_no)}" target="_blank" rel="noopener">${esc(rep.report_nm)} (${esc(rep.rcept_dt)}) 열기 ↗</a>` : ''}
+             </div>
+             <p class="co-msg" id="cl-report-msg"></p>`
+          : `<p class="cr-empty">DART에서 불러온 기업이 없습니다. <a href="#/company">기업분석</a>에서 기업을 검색한 뒤 <b>이 기업으로 자기소개서 쓰기</b>를 누르세요.
+               DART 연결 전이라면 아래에 회사명을 직접 적어도 됩니다.</p>
+             <div class="cl-field" style="margin-top:12px"><label for="cl-f-name">회사명</label><input class="co-input" id="cl-f-name" data-field="name" value="${esc(c.name)}" placeholder="예: 한국전력공사"></div>`}
+        <p class="co-warn">DART 기업개황에는 회사 소개 문장이 없습니다. 사업 내용은 <b>사업보고서의 "II. 사업의 내용"</b>에서, 인재상은 <b>기업 공식 채용 페이지</b>에서 직접 읽고 아래에 <b>내 말로 요약</b>해 두세요. 자기소개서는 이 요약을 근거로 씁니다.</p>
+        <div class="cl-fields">
+          <div class="cl-field"><label for="cl-f-business">사업 내용 요약</label><textarea id="cl-f-business" data-field="business" rows="3" placeholder="사업보고서 '사업의 내용'을 읽고 핵심 사업·제품·최근 방향을 2~3줄로">${esc(c.business)}</textarea></div>
+          <div class="cl-field"><label for="cl-f-talent">인재상·핵심가치</label><textarea id="cl-f-talent" data-field="talent" rows="2" placeholder="공식 채용 페이지에 적힌 인재상">${esc(c.talent)}</textarea></div>
+          <div class="cl-field"><label for="cl-f-job">지원 직무·공고 요건</label><textarea id="cl-f-job" data-field="job" rows="2" placeholder="지원할 공고의 직무명, 담당 업무, 자격·우대 요건">${esc(c.job)}</textarea></div>
+          <div class="cl-field"><label for="cl-f-src">출처 메모</label><input class="co-input" id="cl-f-src" data-field="sourceNote" value="${esc(c.sourceNote)}" placeholder="예: 2025 사업보고서, 채용 페이지 URL, 확인 날짜"></div>
+        </div>
+      </div>`;
+  }
+
+  function chipsFor() {
+    const c = current.company;
+    const comp = [
+      ['회사명', c.name], ['업종코드', c.induty], ['설립일', c.est],
+      ['사업 내용', c.business], ['인재상', c.talent], ['지원 직무', c.job]
+    ].filter(([, v]) => v && String(v).trim());
+    const mine = myEvidence();
+    return `
+      <div class="co-card cl-side">
+        <h3>작성할 때 쓸 재료</h3>
+        <p class="cr-help">누르면 마지막으로 누른 칸(키워드 칸 또는 본문)에 내용이 들어갑니다.</p>
+        <h4 class="cl-h4">기업</h4>
+        <div class="cl-chips">${comp.length ? comp.map(([k, v]) => `<button type="button" class="cl-chip" data-insert="${esc(v)}" title="${esc(v)}"><b>${esc(k)}</b> ${esc(String(v).slice(0, 40))}${String(v).length > 40 ? '…' : ''}</button>`).join('') : '<span class="cr-help">기업 정보를 먼저 채우세요.</span>'}</div>
+        <h4 class="cl-h4">내 경험·근거 <span class="cr-help">(포트폴리오 데이터에서 자동으로 가져옴)</span></h4>
+        <div class="cl-chips">${mine.length ? mine.map((m) => `<button type="button" class="cl-chip" data-insert="${esc(m.text)}" title="${esc(m.text)}"><b>${esc(m.src)}</b> ${esc(m.text.slice(0, 44))}${m.text.length > 44 ? '…' : ''}</button>`).join('') : '<span class="cr-help">아직 없음</span>'}</div>
+        ${mine.some((m) => /자기 평가/.test(m.src)) ? '<p class="cr-help" style="margin-top:8px">"자기 평가" 항목은 주장만으로 쓰지 말고, 그걸 보여 주는 실제 행동과 함께 쓰세요.</p>' : ''}
+        ${(D.projects || []).every((x) => x.sample) ? '<p class="co-warn">등록된 실제 프로젝트가 없습니다. 직무 역량 문항의 근거가 약해질 수 있습니다.</p>' : ''}
+      </div>`;
+  }
+
+  function questionCard(q, i) {
+    const n = count(q.text || '');
+    const w = checks(q);
+    const over = q.limit && n.all > q.limit;
+    return `
+      <div class="co-card cl-q" data-q="${i}">
+        <div class="cl-q-head">
+          <span class="cl-q-no">${i + 1}</span>
+          <input class="co-input cl-q-title" data-qf="title" value="${esc(q.title)}" aria-label="문항 ${i + 1} 제목">
+          <label class="cl-limit">제한 <input type="number" min="0" step="50" data-qf="limit" value="${esc(q.limit || '')}" aria-label="글자 수 제한">자</label>
+          <button class="btn btn-danger" type="button" data-cl="del-q" title="문항 삭제">삭제</button>
+        </div>
+        <ul class="cl-guide">${(GUIDE[q.kind] || GUIDE.custom).map((g) => `<li>${esc(g)}</li>`).join('')}</ul>
+        <div class="cl-field cl-kw-box">
+          <label>Gemini에게 줄 키워드·추가하고 싶은 내용</label>
+          <textarea class="cl-kw" data-qf="keywords" rows="3" placeholder="예: 근로장학생 때 강의실 기자재 점검표를 정리함 / 전력 IT 시스템에 관심 / 꼼꼼함을 보여 주는 사례 위주로">${esc(q.keywords || '')}</textarea>
+        </div>
+        <div class="co-row cl-ai-row">
+          <button class="btn btn-primary" type="button" data-cl="gen">${(q.text || '').trim() ? '다시 작성' : 'Gemini로 작성'}</button>
+          <button class="btn" type="button" data-cl="refine"${(q.text || '').trim() ? '' : ' disabled'}>지금 글 다듬기</button>
+          ${over ? '<button class="btn" type="button" data-cl="shorten">제한에 맞게 줄이기</button>' : ''}
+          ${q.prev != null ? '<button class="btn" type="button" data-cl="undo">이전 버전으로</button>' : ''}
+        </div>
+        <p class="co-msg cl-ai-msg" role="status"></p>
+        ${q.ai ? `<p class="cl-ai-badge"><span class="badge badge-soft">Gemini 작성</span> ${esc(q.ai.model)} · ${esc(q.ai.at)} — 사실과 다른 내용, [확인 필요] 표시가 없는지 확인하세요.</p>` : ''}
+        <textarea class="cl-text" data-qf="text" rows="10" placeholder="Gemini로 작성하거나 직접 쓰세요. 결과는 여기서 바로 고칠 수 있습니다.">${esc(q.text)}</textarea>
+        <div class="cl-count${over ? ' is-over' : ''}">
+          <span>공백 포함 <b>${n.all}</b>${q.limit ? ` / ${q.limit}` : ''}자</span><span>공백 제외 ${n.noSpace}자</span><span>${n.bytes} bytes (UTF-8)</span>
+        </div>
+        ${q.limit ? `<div class="cl-bar"><span style="width:${Math.min(100, (n.all / q.limit) * 100)}%"></span></div>` : ''}
+        <ul class="cl-warns">${w.map((x) => `<li class="${LV[x.lv]}">${esc(x.msg)}</li>`).join('')}</ul>
+      </div>`;
+  }
+
+  function draftBar() {
+    const list = Object.values(drafts).sort((a, b) => String(b.updated).localeCompare(String(a.updated)));
+    return `
+      <div class="co-card">
+        <div class="co-row">
+          <label for="cl-draft" class="cr-help">초안</label>
+          <select id="cl-draft" class="cl-select">${list.map((d) => `<option value="${d.id}"${d.id === current.id ? ' selected' : ''}>${esc(d.company.name || '(회사명 없음)')} · ${esc(d.updated)}</option>`).join('')}</select>
+          <button class="btn" type="button" data-cl="new">새 초안</button>
+          <button class="btn" type="button" data-cl="copy">전체 복사</button>
+          <button class="btn" type="button" data-cl="txt">.txt로 저장</button>
+          <button class="btn btn-danger" type="button" data-cl="del">이 초안 삭제</button>
+        </div>
+        <p class="co-msg" id="cl-save">초안은 이 브라우저에만 저장됩니다.</p>
+      </div>`;
+  }
+
+  function render() {
+    if (!current) {
+      const list = Object.values(drafts).sort((a, b) => String(b.updated).localeCompare(String(a.updated)));
+      current = drafts[store.getCur()] || list[0] || newDraft();
+    }
+    store.setCur(current.id); // 새로고침해도 마지막에 보던 초안을 연다
+    $('#extra-body').innerHTML = `
+      <div class="cl-main">
+        <p class="muted" style="margin:0">문항마다 키워드·추가하고 싶은 내용을 적고 <b>Gemini로 작성</b>을 누르면, 기업 정보와 포트폴리오 근거를 바탕으로 초안을 씁니다. 결과는 바로 고칠 수 있고, 흔한 실수는 자동으로 표시됩니다.</p>
+        ${draftBar()}
+        ${geminiCard()}
+        <div class="cl-grid">
+          <div class="cl-col">${companyCard()}
+            <div id="cl-qs">${current.questions.map(questionCard).join('')}</div>
+            <button class="btn" type="button" data-cl="add-q" style="justify-self:start">+ 문항 추가</button>
+          </div>
+          <div class="cl-col">${chipsFor()}</div>
+        </div>
+      </div>`;
+  }
+
+  // 한 문항만 다시 그린다 (입력 중 커서 유지)
+  function refreshQuestionMeta(i) {
+    const card = section.querySelector(`.cl-q[data-q="${i}"]`);
+    if (!card) return;
+    const q = current.questions[i];
+    const tmp = document.createElement('div');
+    tmp.innerHTML = questionCard(q, i);
+    const fresh = tmp.firstElementChild;
+    card.querySelector('.cl-count').replaceWith(fresh.querySelector('.cl-count'));
+    const oldBar = card.querySelector('.cl-bar'), newBar = fresh.querySelector('.cl-bar');
+    if (oldBar && newBar) oldBar.replaceWith(newBar); else if (oldBar) oldBar.remove(); else if (newBar) card.querySelector('.cl-count').after(newBar);
+    card.querySelector('.cl-warns').replaceWith(fresh.querySelector('.cl-warns'));
+    card.querySelector('.cl-ai-row').replaceWith(fresh.querySelector('.cl-ai-row'));
+  }
+
+  /* ---------- 내보내기 ---------- */
+  function asText() {
+    const c = current.company;
+    const lines = [`[${c.name || '회사명 없음'}] 자기소개서 초안 · ${current.updated}`, ''];
+    current.questions.forEach((q, i) => {
+      const n = count(q.text || '');
+      lines.push(`${i + 1}. ${q.title} (${n.all}${q.limit ? `/${q.limit}` : ''}자)`, q.text || '', '');
+    });
+    return lines.join('\n');
+  }
+  async function copyText(t) {
+    try { await navigator.clipboard.writeText(t); return true; } catch {
+      const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch { /* 무시 */ }
+      ta.remove(); return ok;
+    }
+  }
+
+  /* ---------- 이벤트 ---------- */
+  let lastText = null; // 마지막으로 포커스된 본문 textarea (재료 삽입 위치)
+  section.addEventListener('focusin', (e) => { if (e.target.matches('.cl-text, .cl-kw')) lastText = e.target; });
+
+  section.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.dataset.field) {
+      current.company[t.dataset.field] = t.value;
+      persistSoon();
+      if (t.dataset.field === 'name') current.questions.forEach((_, i) => refreshQuestionMeta(i));
+      return;
+    }
+    const card = t.closest('.cl-q');
+    if (card && t.dataset.qf) {
+      const i = Number(card.dataset.q), q = current.questions[i];
+      q[t.dataset.qf] = t.dataset.qf === 'limit' ? Math.max(0, parseInt(t.value, 10) || 0) : t.value;
+      refreshQuestionMeta(i);
+      persistSoon();
+    }
+  });
+  // 기업 정보 칸을 벗어나면 오른쪽 재료 목록을 새로 그린다
+  section.addEventListener('change', (e) => {
+    if (e.target.id === 'cl-draft') { persist(); current = drafts[e.target.value]; render(); return; }
+    if (e.target.dataset.field) { persist(); const side = section.querySelector('.cl-side'); if (side) side.outerHTML = chipsFor(); }
+  });
+
+  section.addEventListener('click', async (e) => {
+    const chip = e.target.closest('[data-insert]');
+    if (chip) {
+      const ta = lastText && document.body.contains(lastText) ? lastText : section.querySelector('.cl-text');
+      if (!ta) return;
+      const v = chip.dataset.insert, s = ta.selectionStart ?? ta.value.length, en = ta.selectionEnd ?? s;
+      ta.value = ta.value.slice(0, s) + v + ta.value.slice(en);
+      ta.focus(); ta.selectionStart = ta.selectionEnd = s + v.length;
+      ta.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+    const b = e.target.closest('[data-cl]');
+    if (!b) return;
+    const act = b.dataset.cl;
+    if (act === 'add-q') { current.questions.push({ title: '새 문항', limit: 500, kind: 'custom', text: '' }); persist(); render(); }
+    if (act === 'del-q') {
+      const i = Number(b.closest('.cl-q').dataset.q);
+      if (current.questions[i].text && !confirmDelete(b)) return;
+      current.questions.splice(i, 1); persist(); render();
+    }
+    if (act === 'new') { persist(); current = newDraft(); persist('새 초안'); render(); }
+    if (act === 'del') {
+      if (!confirmDelete(b)) return;
+      delete drafts[current.id]; store.save(drafts); current = null; render();
+    }
+    if (act === 'copy') { const ok = await copyText(asText()); $('#cl-save').textContent = ok ? '전체 내용을 복사했습니다.' : '복사하지 못했습니다. .txt로 저장을 쓰세요.'; }
+    if (act === 'txt') {
+      // 파일(file://)로 연 페이지에서도 파일 이름이 유지되도록 data: 주소를 쓴다
+      const a = document.createElement('a');
+      a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent('\ufeff' + asText());
+      a.download = `자기소개서_${(current.company.name || '초안').replace(/[\\/:*?"<>|]/g, '')}_${today()}.txt`;
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+    if (act === 'report') findReport(b);
+  });
+
+  // 삭제는 버튼을 한 번 더 눌러야 실행 (브라우저 확인창을 쓰지 않는다)
+  function confirmDelete(btn) {
+    if (btn.dataset.armed === '1') return true;
+    btn.dataset.armed = '1';
+    const old = btn.textContent;
+    btn.textContent = '한 번 더 누르면 삭제';
+    setTimeout(() => { btn.dataset.armed = ''; btn.textContent = old; }, 3000);
+    return false;
+  }
+
+  async function findReport(btn) {
+    const msg = $('#cl-report-msg');
+    const api = window.App && window.App.dart;
+    if (!api) { msg.textContent = '기업분석 도구가 꺼져 있어 조회할 수 없습니다.'; return; }
+    btn.disabled = true;
+    msg.textContent = 'DART에서 최근 정기보고서를 찾는 중…';
+    msg.classList.remove('is-error');
+    try {
+      const d = new Date(); d.setFullYear(d.getFullYear() - 3);
+      const bgn = d.toISOString().slice(0, 10).replace(/-/g, '');
+      const res = await api.dartFetch('list.json', { corp_code: current.company.corp_code, bgn_de: bgn, pblntf_ty: 'A', last_reprt_at: 'Y', page_count: '20' });
+      const j = await res.json();
+      if (j.status === '013') throw new Error('최근 3년간 정기보고서(사업·반기·분기)가 없습니다. 공시 의무가 없는 기업일 수 있습니다.');
+      if (j.status !== '000') throw new Error(j.message || 'DART 조회 오류');
+      const list = j.list || [];
+      const pick = list.find((r) => /사업보고서/.test(r.report_nm)) || list[0];
+      current.company.report = { rcept_no: pick.rcept_no, report_nm: pick.report_nm.trim(), rcept_dt: pick.rcept_dt };
+      persist();
+      render();
+      $('#cl-report-msg').textContent = '보고서에서 "II. 사업의 내용"을 읽고 위 사업 내용 요약 칸에 직접 정리하세요.';
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.classList.add('is-error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // 기업분석 페이지에서 "이 기업으로 자기소개서 쓰기"를 누르면 호출된다
+  window.addEventListener('cl:pick', (e) => {
+    const c = e.detail || {};
+    // 같은 기업의 초안이 있으면 그걸 열고, DART 정보만 최신으로 갱신
+    const same = Object.values(drafts).find((d) => d.company.corp_code && d.company.corp_code === c.corp_code);
+    persist();
+    if (same) { Object.assign(same.company, c); current = same; }
+    else if (current && !current.company.corp_code && !current.company.name && current.questions.every((q) => !q.text)) { Object.assign(current.company, c); }
+    else current = newDraft(c);
+    persist('기업 정보 불러옴');
+    render();
+  });
+
+  /* ======================================================================
+     Gemini 작성 — 사용자가 준 키워드 + 기업 정보 + 포트폴리오 근거로 초안을 쓴다.
+     API 키는 이 페이지에서 Google로 직접 전송된다 (다른 서버를 거치지 않음).
+     ====================================================================== */
+  const GKEY = 'gemini.key', GMODEL = 'gemini.model';
+  const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  const lsSet = (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch { /* 무시 */ } };
+  const G = { key: lsGet(GKEY) || '', remember: !!lsGet(GKEY), model: lsGet(GMODEL) || 'gemini-3.8-flash', models: [], busy: false };
+  const GAPI = 'https://generativelanguage.googleapis.com/v1beta';
+
+  function geminiCard() {
+    return `
+      <div class="co-card" id="g-card">
+        <h3>Gemini 연결</h3>
+        <div class="co-grid">
+          <label for="g-key">API 키</label>
+          <div class="co-row">
+            <input class="co-input" id="g-key" type="password" spellcheck="false" autocomplete="off" value="${esc(G.key)}" placeholder="Google AI Studio에서 발급한 키">
+            <button class="btn" type="button" data-g="toggle">보기</button>
+          </div>
+          <span></span>
+          <label class="co-check"><input type="checkbox" id="g-remember"${G.remember ? ' checked' : ''}> 이 브라우저에 키 기억하기</label>
+          <label for="g-model">모델</label>
+          <div class="co-row">
+            <input class="co-input" id="g-model" list="g-models" spellcheck="false" value="${esc(G.model)}">
+            <datalist id="g-models">${G.models.map((m) => `<option value="${esc(m)}">`).join('')}</datalist>
+            <button class="btn" type="button" data-g="models">모델 목록 불러오기</button>
+          </div>
+          <span></span>
+          <div class="co-row">
+            <button class="btn" type="button" data-env-load>.env 불러오기</button>
+            <button class="btn" type="button" data-g="test">연결 테스트</button>
+            <button class="btn btn-primary" type="button" data-g="all">빈 문항 모두 작성</button>
+          </div>
+        </div>
+        <p class="co-msg" id="g-msg"></p>
+        <p class="co-warn">작성 버튼을 누르면 <b>기업 정보, 포트폴리오 근거(학력·경력·강점 등), 입력한 키워드, 현재 초안</b>이 Google Gemini API로 전송됩니다. 이름·이메일은 보내지 않습니다.
+          키가 없다면 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>에서 발급받으세요.</p>
+      </div>`;
+  }
+
+  function readG() {
+    G.key = ($('#g-key') || {}).value?.trim() ?? G.key;
+    G.remember = !!($('#g-remember') || {}).checked;
+    G.model = (($('#g-model') || {}).value || G.model).trim().replace(/^models\//, '');
+    lsSet(GKEY, G.remember ? G.key : '');
+    lsSet(GMODEL, G.model);
+  }
+  const gMsg = (t, err = false) => { const el = $('#g-msg'); if (el) { el.textContent = t.split(G.key || '\u0000').join('****'); el.classList.toggle('is-error', err); } };
+
+  async function gFetch(path, body) {
+    if (!G.key) throw new Error('Gemini API 키를 먼저 입력하세요.');
+    let res;
+    try {
+      res = await fetch(`${GAPI}/${path}`, {
+        method: body ? 'POST' : 'GET',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': G.key }, // 키는 주소(URL)가 아니라 헤더로 보낸다
+        body: body ? JSON.stringify(body) : undefined,
+        signal: AbortSignal.timeout(120000)
+      });
+    } catch (e) {
+      throw new Error(e.name === 'TimeoutError' ? 'Gemini 응답 시간이 초과됐습니다.' : 'Gemini에 연결하지 못했습니다. 인터넷 연결을 확인하세요.');
+    }
+    let j = null;
+    try { j = await res.json(); } catch { /* 무시 */ }
+    if (!res.ok) {
+      const m = (j && j.error && j.error.message) || '';
+      if (res.status === 400 && /API key/i.test(m)) throw new Error('API 키가 올바르지 않습니다.');
+      if (res.status === 403) throw new Error('이 키로는 Gemini API를 쓸 수 없습니다 (권한 없음).');
+      if (res.status === 404) throw new Error(`모델 "${G.model}"을(를) 찾을 수 없습니다. "모델 목록 불러오기"로 사용할 수 있는 모델을 고르세요.`);
+      if (res.status === 429) throw new Error('요청 한도를 넘었습니다. 잠시 후 다시 시도하세요.');
+      throw new Error(`Gemini 오류 (HTTP ${res.status}) ${m}`.trim());
+    }
+    return j;
+  }
+
+  async function listModels() {
+    const j = await gFetch('models?pageSize=200');
+    return (j.models || [])
+      .filter((m) => (m.supportedGenerationMethods || []).includes('generateContent'))
+      .map((m) => m.name.replace(/^models\//, ''))
+      .filter((n) => /gemini/.test(n) && !/(image|tts|live|embed|transcribe|audio|vision)/.test(n));
+  }
+
+  async function generate(system, prompt) {
+    const j = await gFetch(`models/${encodeURIComponent(G.model)}:generateContent`, {
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.6 }
+    });
+    if (j.promptFeedback && j.promptFeedback.blockReason) throw new Error(`Gemini가 요청을 거부했습니다 (${j.promptFeedback.blockReason}).`);
+    const cand = (j.candidates || [])[0];
+    const text = ((cand && cand.content && cand.content.parts) || []).filter((p) => !p.thought && p.text).map((p) => p.text).join('').trim();
+    if (!text) throw new Error(`Gemini가 빈 답을 보냈습니다${cand && cand.finishReason ? ` (${cand.finishReason})` : ''}.`);
+    return text
+      .replace(/^```[a-z]*\n?|```$/g, '')     // 코드 블록 제거
+      .replace(/\*\*(.+?)\*\*/g, '$1')         // 굵게 표시 제거
+      .replace(/^["“”']+|["“”']+$/g, '')      // 앞뒤 따옴표 제거
+      .trim();
+  }
+
+  const SYSTEM = [
+    '너는 한국 채용 자기소개서를 쓰는 에디터다. 지원자가 준 자료만으로 한 문항의 답을 쓴다.',
+    '규칙:',
+    '1. [지원자 정보]와 [지원자가 준 키워드·추가 내용]에 있는 사실만 쓴다. 거기 없는 경험, 프로젝트, 수치, 기간, 수상, 자격증, 사용 기술, 협업 경험을 절대 만들지 않는다.',
+    '2. 회사에 대한 내용은 [기업 정보]에 있는 것만 쓴다. 매출, 순위, 수상, 신사업 같은 회사 사실을 지어내지 않는다.',
+    '3. 사실이 부족해 문장을 완성할 수 없으면 지어내지 말고 그 자리에 [확인 필요: 필요한 정보]를 넣는다.',
+    '4. "자기 평가"로 표시된 내용은 단정하지 말고, 그것을 보여 주는 실제 행동과 함께 쓴다.',
+    '5. 열정, 성실, 최선, 책임감, 혁신 같은 추상어를 쓰지 말고 구체적인 행동으로 보여 준다.',
+    '6. 문항이 묻는 것에 첫 문장으로 바로 답한다. 다른 문항과 같은 사례를 반복하지 않도록 한다.',
+    '7. 제목, 번호, 소제목, 마크다운, 따옴표 없이 본문만 출력한다. 존댓말(~습니다)로 쓴다.',
+    '8. 글자 수 제한은 공백 포함 기준이며 반드시 지킨다.'
+  ].join('\n');
+
+  function buildPrompt(i, mode) {
+    const c = current.company, q = current.questions[i];
+    const p = D.profile || {};
+    const L = [];
+    const add = (k, v) => { if (v && String(v).trim()) L.push(`- ${k}: ${String(v).trim()}`); };
+    L.push('[기업 정보]');
+    add('회사명', c.name); add('영문명', c.eng); add('법인 구분', c.cls); add('업종코드(한국표준산업분류)', c.induty);
+    add('설립일', c.est); add('홈페이지', c.homepage); add('사업 내용(지원자 요약)', c.business);
+    add('인재상·핵심가치(지원자 정리)', c.talent); add('지원 직무·공고 요건', c.job);
+    L.push('', '[지원자 정보]');
+    myEvidence().forEach((m) => L.push(`- ${m.text} (${m.src})`));
+    const skills = (p.skills || []).map((s) => s.name).filter(Boolean);
+    if (skills.length) L.push(`- 사용해 본 기술(프로젝트 근거 미등록): ${skills.join(', ')}`);
+    if ((D.projects || []).every((x) => x.sample)) L.push('- 등록된 프로젝트 없음');
+    const others = current.questions.map((x, k) => ({ x, k })).filter(({ x, k }) => k !== i && (x.text || '').trim());
+    if (others.length) {
+      L.push('', '[다른 문항에 이미 쓴 내용 — 같은 사례를 반복하지 말 것]');
+      others.forEach(({ x }) => L.push(`- ${x.title}: ${x.text.trim().slice(0, 200)}${x.text.length > 200 ? '…' : ''}`));
+    }
+    L.push('', '[지원자가 준 키워드·추가 내용 — 지원자가 직접 제공한 사실로 취급]', (q.keywords || '').trim() || '(없음)');
+    L.push('', '[문항]', q.title);
+    L.push(`작성 방향: ${(GUIDE[q.kind] || GUIDE.custom).join(' / ')}`);
+    const lim = Number(q.limit) || 0;
+    L.push(lim ? `분량: 공백 포함 ${lim}자 이하, 가능하면 ${Math.round(lim * 0.85)}~${lim}자` : '분량: 500자 안팎');
+    if (mode === 'refine') L.push('', '[현재 초안 — 사실은 그대로 두고 문장만 다듬을 것. 새 사실 추가 금지]', q.text);
+    if (mode === 'shorten') L.push('', `[현재 초안 — 내용과 사실은 유지하고 공백 포함 ${lim}자 이하로 줄일 것. 새 사실 추가 금지]`, q.text);
+    return L.join('\n');
+  }
+
+  async function runGen(i, mode) {
+    const q = current.questions[i];
+    const card = () => section.querySelector(`.cl-q[data-q="${i}"]`);
+    const msg = (t, err) => { const el = card() && card().querySelector('.cl-ai-msg'); if (el) { el.textContent = t; el.classList.toggle('is-error', !!err); } };
+    readG();
+    if (!G.key) { msg('위 "Gemini 연결"에 API 키를 입력하세요.', true); $('#g-key') && $('#g-key').focus(); return false; }
+    if (!(current.company.name || '').trim()) { msg('회사명을 먼저 입력하거나 기업분석에서 기업을 불러오세요.', true); return false; }
+    if ((mode === 'refine' || mode === 'shorten') && !(q.text || '').trim()) { msg('다듬을 글이 없습니다.', true); return false; }
+    G.busy = true;
+    section.querySelectorAll('[data-cl="gen"],[data-cl="refine"],[data-cl="shorten"],[data-g="all"]').forEach((b) => (b.disabled = true));
+    msg(mode === 'shorten' ? 'Gemini가 줄이는 중…' : mode === 'refine' ? 'Gemini가 다듬는 중…' : 'Gemini가 작성하는 중…');
+    try {
+      let out = await generate(SYSTEM, buildPrompt(i, mode));
+      const lim = Number(q.limit) || 0;
+      if (lim && out.length > lim) { // 한도를 넘으면 한 번 더 줄여 달라고 한다
+        msg(`${out.length}자로 한도를 넘어 한 번 더 줄이는 중…`);
+        const prev = q.text; q.text = out;
+        out = await generate(SYSTEM, buildPrompt(i, 'shorten'));
+        q.text = prev;
+      }
+      if (q.text && q.text.trim()) q.prev = q.text; // 되돌리기용
+      q.text = out;
+      q.ai = { model: G.model, at: new Date().toLocaleString('ko-KR'), mode };
+      persist('Gemini 작성 저장됨');
+      const el = card();
+      if (el) { el.outerHTML = questionCard(q, i); }
+      msg(`완료 · ${out.length}자. 사실과 다른 내용이 없는지 꼭 읽어 보세요.`);
+      return true;
+    } catch (e) {
+      msg(e.message.split(G.key || '\u0000').join('****'), true);
+      return false;
+    } finally {
+      G.busy = false;
+      section.querySelectorAll('[data-cl="gen"],[data-cl="refine"],[data-cl="shorten"],[data-g="all"]').forEach((b) => (b.disabled = false));
+    }
+  }
+
+  section.addEventListener('click', async (e) => {
+    const g = e.target.closest('[data-g]');
+    if (g) {
+      const act = g.dataset.g;
+      if (act === 'toggle') { const k = $('#g-key'); k.type = k.type === 'password' ? 'text' : 'password'; g.textContent = k.type === 'password' ? '보기' : '숨기기'; return; }
+      readG();
+      if (act === 'models' || act === 'test') {
+        g.disabled = true; gMsg(act === 'test' ? '연결 확인 중…' : '모델 목록을 불러오는 중…');
+        try {
+          const list = await listModels();
+          G.models = list;
+          const dl = $('#g-models'); if (dl) dl.innerHTML = list.map((m) => `<option value="${esc(m)}">`).join('');
+          const ok = list.includes(G.model);
+          gMsg(act === 'test'
+            ? (ok ? `연결 성공 · 모델 ${G.model} 사용 가능` : `키는 정상입니다. 다만 "${G.model}" 모델이 목록에 없습니다. 모델 칸을 눌러 목록에서 고르세요.`)
+            : `사용 가능한 모델 ${list.length}개 — 모델 칸을 누르면 목록이 보입니다.`, act === 'test' && !ok);
+        } catch (err) { gMsg(err.message, true); } finally { g.disabled = false; }
+      }
+      if (act === 'all') {
+        const targets = current.questions.map((q, i) => ({ q, i })).filter(({ q }) => !(q.text || '').trim());
+        if (!targets.length) { gMsg('빈 문항이 없습니다. 문항별 "다시 작성"을 쓰세요.'); return; }
+        for (const { i } of targets) {
+          gMsg(`${i + 1}번 문항 작성 중… (${targets.findIndex((t) => t.i === i) + 1}/${targets.length})`);
+          const ok = await runGen(i, 'gen');
+          if (!ok) { gMsg(`${i + 1}번 문항에서 멈췄습니다. 문항 아래 메시지를 확인하세요.`, true); return; }
+        }
+        gMsg(`빈 문항 ${targets.length}개를 작성했습니다. 사실과 다른 내용이 없는지 꼭 읽어 보세요.`);
+      }
+      return;
+    }
+    const b = e.target.closest('[data-cl="gen"],[data-cl="refine"],[data-cl="shorten"],[data-cl="undo"]');
+    if (!b || G.busy) return;
+    const i = Number(b.closest('.cl-q').dataset.q), q = current.questions[i];
+    if (b.dataset.cl === 'undo') {
+      if (q.prev == null) return;
+      [q.text, q.prev] = [q.prev, q.text];
+      persist('이전 버전으로 되돌림');
+      b.closest('.cl-q').outerHTML = questionCard(q, i);
+      return;
+    }
+    runGen(i, b.dataset.cl === 'gen' ? 'gen' : b.dataset.cl);
+  });
+  section.addEventListener('change', (e) => { if (e.target.id === 'g-remember' || e.target.id === 'g-model' || e.target.id === 'g-key') readG(); });
+  // .env 불러오기 → Gemini 키·모델 채우기
+  window.addEventListener('env:loaded', (e) => {
+    const v = e.detail || {};
+    if (v.GEMINI_API_KEY && $('#g-key')) $('#g-key').value = v.GEMINI_API_KEY;
+    if (v.GEMINI_MODEL && $('#g-model')) $('#g-model').value = v.GEMINI_MODEL;
+    if ((v.GEMINI_API_KEY || v.GEMINI_MODEL) && $('#g-key')) readG();
+  });
+
+  // 해시 라우팅: #/extra 이면 이 페이지로 전환
+  function syncExtra() {
+    const on = location.hash === '#/extra';
+    const was = document.body.classList.contains('view-extra');
+    document.body.classList.toggle('view-extra', on);
+    if (on && !was) window.scrollTo(0, 0);
+    if (on) document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('active', a.dataset.nav === 'extra-page'));
+  }
+  window.addEventListener('hashchange', syncExtra);
+  render();
+  syncExtra();
+})();
+  </script>
+</body>
+</html>
