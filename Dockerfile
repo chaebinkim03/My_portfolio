@@ -11,4 +11,4 @@ RUN mkdir -p /etc/nginx/templates && printf '%s\n' \
   '  location / { try_files $uri $uri/ /index.html; }' \
   '}' > /etc/nginx/templates/default.conf.template
 # 주소창에 사이트 주소만 쳐도 열리도록 index.html 이름으로 복사
-COPY index(1).html /usr/share/nginx/html/index.html
+COPY index (1).html /usr/share/nginx/html/index.html
